@@ -16,5 +16,6 @@ import RequireAdmin from "./auth/RequireAdmin";
 export default function App() {
   // 🔹 Backend-tilkoblingstest (kun for verifisering)
   useEffect(() => {
-    fetch("https://DIN-BACKEND-URL/status")
+   fetch("https://vitalityboost-backend-2.onrender.com/status")
+
       .then((res) => res
