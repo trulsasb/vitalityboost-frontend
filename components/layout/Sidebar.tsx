@@ -21,26 +21,34 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = "" }) => {
     { href: "/admin/layout", label: "Layout‑editor" },
   ];
 
+  const isActive = (href: string) => {
+    // Markerer også aktive undersider, f.eks. /admin/products/123
+    if (href === "/admin") return pathname === "/admin";
+    return pathname.startsWith(href);
+  };
+
   return (
     <aside
       className={`w-64 border-r border-gray-200 bg-white/80 backdrop-blur-sm ${className}`}
+      aria-label="Admin-navigasjon"
     >
       <div className="flex h-full flex-col px-4 py-6">
         <h2 className="mb-6 text-lg font-semibold tracking-tight">
           Adminpanel
         </h2>
 
-        <nav className="flex flex-col gap-3 text-sm font-medium text-gray-700">
+        <nav className="flex flex-col gap-2 text-sm font-medium text-gray-700">
           {links.map((link) => {
-            const isActive = pathname === link.href;
+            const active = isActive(link.href);
 
             return (
               <Link
                 key={link.href}
                 href={link.href}
+                aria-current={active ? "page" : undefined}
                 className={
-                  isActive
-                    ? "rounded-md bg-gray-100 px-3 py-2 text-black"
+                  active
+                    ? "rounded-md bg-gray-100 px-3 py-2 text-black shadow-sm"
                     : "rounded-md px-3 py-2 hover:bg-gray-50 hover:text-black"
                 }
               >
