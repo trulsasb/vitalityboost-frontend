@@ -13,17 +13,25 @@ import {
 import { PageShell } from "@/components/layout/PageShell";
 import { PageSection } from "@/components/layout/PageSection";
 import { PageContainer } from "@/components/layout/PageContainer";
+import Image from "next/image";
 
 export default function HomePage() {
   return (
     <PageShell>
-
       <PageSection>
         <Hero
           title="Naturlig energi. Klarere fokus. Bedre hverdag."
           subtitle="Premium kosttilskudd utviklet for å støtte energi, konsentrasjon og velvære – helt uten kompromisser."
-          ctaPrimary={<a href="/products" className="btn-primary">Se produkter</a>}
-          ctaSecondary={<a href="/about" className="btn-secondary">Lær mer</a>}
+          ctaPrimary={
+            <a href="/products" className="btn-primary" aria-label="Se produkter">
+              Se produkter
+            </a>
+          }
+          ctaSecondary={
+            <a href="/about" className="btn-secondary" aria-label="Lær mer om Vitalityboost">
+              Lær mer
+            </a>
+          }
         />
       </PageSection>
 
@@ -72,64 +80,5 @@ export default function HomePage() {
         <FeatureWithImage
           heading="Optimalisert for hverdagen"
           description="Våre produkter er utviklet for å gi deg stabil energi og fokus – enten du jobber, trener eller studerer."
-          image={<img src="/images/product-1.png" alt="Produkt" className="rounded-xl" />}
-        />
-      </PageSection>
-
-      <PageSection>
-        <Testimonials
-          heading="Hva kundene sier"
-          testimonials={[
-            {
-              quote: "Jeg har aldri følt meg så fokusert på jobb!",
-              author: "Marius, 34",
-            },
-            {
-              quote: "Perfekt før trening – gir meg et skikkelig løft.",
-              author: "Sara, 29",
-            },
-          ]}
-        />
-      </PageSection>
-
-      <PageSection>
-        <Pricing
-          heading="Velg din pakke"
-          plans={[
-            {
-              name: "Start",
-              price: "299",
-              features: ["1 produkt", "Gratis frakt", "30 dagers garanti"],
-            },
-            {
-              name: "Pro",
-              price: "499",
-              features: ["2 produkter", "Prioritert frakt", "30 dagers garanti"],
-            },
-            {
-              name: "Ultimate",
-              price: "799",
-              features: ["3 produkter", "Ekspressfrakt", "Premium support"],
-            },
-          ]}
-        />
-      </PageSection>
-
-      <PageSection>
-        <CTASection
-          title="Klar for mer energi?"
-          description="Start reisen mot en bedre hverdag i dag."
-          cta={<a href="/products" className="btn-primary">Se produkter</a>}
-        />
-      </PageSection>
-
-      <PageSection>
-        <Newsletter
-          heading="Hold deg oppdatert"
-          subheading="Få eksklusive tilbud og nyheter rett i innboksen."
-        />
-      </PageSection>
-
-    </PageShell>
-  );
-}
+          image={
+            <Image
