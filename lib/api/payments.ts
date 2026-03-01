@@ -1,52 +1,31 @@
-// payments.ts
+import { PaymentRequest, PaymentResponse } from "@/types/payments";
 
-import { Order } from "@/types";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://api.vitalityboost_nettbutikk.no";
-
-async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const res = await fetch(`${API_BASE}${endpoint}`, {
-    ...options,
+export async function createPayment(data: PaymentRequest): Promise<PaymentResponse> {
+  const res = await fetch(`${API_BASE}/payments/create`, {
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
-      ...(options.headers || {}),
     },
-    cache: "no-store",
+    body: JSON.stringify(data),
   });
 
   if (!res.ok) {
-    const errorText = await res.text();
-    throw new Error(`API error: ${res.status} - ${errorText}`);
+    throw new Error(`Payment API error: ${res.status}`);
   }
 
-  return res.json() as Promise<T>;
+  return res.json();
 }
 
-export const payments = {
-  // -------------------------
-  // VIPPS
-  // -------------------------
-  initiateVippsPayment(orderId: string): Promise<{ redirectUrl: string }> {
-    return request<{ redirectUrl: string }>(`/payments/vipps/initiate`, {
-      method: "POST",
-      body: JSON.stringify({ orderId }),
-    });
-  },
+export async function getPaymentStatus(paymentId: string): Promise<PaymentResponse> {
+  const res = await fetch(`${API_BASE}/payments/status/${paymentId}`, {
+    method: "GET",
+  });
 
-  // -------------------------
-  // STRIPE
-  // -------------------------
-  initiateStripePayment(orderId: string): Promise<{ redirectUrl: string }> {
-    return request<{ redirectUrl: string }>(`/payments/stripe/initiate`, {
-      method: "POST",
-      body: JSON.stringify({ orderId }),
-    });
-  },
+  if (!res.ok) {
+    throw new Error(`Payment status API error: ${res.status}`);
+  }
 
-  // -------------------------
-  // ORDER STATUS AFTER PAYMENT
-  // -------------------------
-  getOrderStatus(orderId: string): Promise<Order> {
-    return request<Order>(`/orders/${orderId}`);
-  },
-};
+  return res.json();
+}
