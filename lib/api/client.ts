@@ -1,57 +1,67 @@
-// lib/api/client.ts
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-import { Product, Order, Discount } from "@/types";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://api.vitalityboost_nettbutikk.no";
-
-async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const res = await fetch(`${API_BASE}${endpoint}`, {
-    ...options,
+export async function apiGet<T>(path: string): Promise<T> {
+  const res = await fetch(`${API_BASE}${path}`, {
+    method: "GET",
     headers: {
       "Content-Type": "application/json",
-      ...(options.headers || {}),
     },
-    cache: "no-store",
   });
 
   if (!res.ok) {
-    const errorText = await res.text();
-    throw new Error(`API error: ${res.status} - ${errorText}`);
+    const text = await res.text();
+    throw new Error(`GET ${path} failed: ${res.status} – ${text}`);
   }
 
-  return res.json() as Promise<T>;
+  return res.json();
 }
 
-export const api = {
-  // -------------------------
-  // PRODUCTS
-  // -------------------------
-  getProducts(): Promise<Product[]> {
-    return request<Product[]>("/products");
-  },
+export async function apiPost<T>(path: string, body: unknown): Promise<T> {
+  const res = await fetch(`${API_BASE}${path}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
 
-  getProduct(slug: string): Promise<Product> {
-    return request<Product>(`/products/${slug}`);
-  },
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`POST ${path} failed: ${res.status} – ${text}`);
+  }
 
-  // -------------------------
-  // DISCOUNTS
-  // -------------------------
-  validateDiscount(code: string): Promise<Discount> {
-    return request<Discount>(`/discounts/validate/${code}`);
-  },
+  return res.json();
+}
 
-  // -------------------------
-  // ORDERS
-  // -------------------------
-  createOrder(data: Partial<Order>): Promise<Order> {
-    return request<Order>("/orders", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
-  },
+export async function apiPut<T>(path: string, body: unknown): Promise<T> {
+  const res = await fetch(`${API_BASE}${path}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
 
-  getOrder(orderId: string): Promise<Order> {
-    return request<Order>(`/orders/${orderId}`);
-  },
-};
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`PUT ${path} failed: ${res.status} – ${text}`);
+  }
+
+  return res.json();
+}
+
+export async function apiDelete<T>(path: string): Promise<T> {
+  const res = await fetch(`${API_BASE}${path}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`DELETE ${path} failed: ${res.status} – ${text}`);
+  }
+
+  return res.json();
+}
