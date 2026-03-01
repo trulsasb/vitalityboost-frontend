@@ -2,8 +2,38 @@ import { PageShell } from "@/components/layout/PageShell";
 import { PageSection } from "@/components/layout/PageSection";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { ProductsGrid } from "@/components/products/ProductsGrid";
+import { Pagination } from "@/components/ui/Pagination";
+import { Select } from "@/components/ui/Select";
+import { Checkbox } from "@/components/ui/Checkbox";
 
-export default function ProductsPage() {
+import { getProducts } from "@/lib/products"; // hvis du har denne – hvis ikke, bruker vi fetch
+
+interface ProductsPageProps {
+  searchParams?: {
+    page?: string;
+    sort?: string;
+    category?: string;
+    tag?: string;
+  };
+}
+
+export default async function ProductsPage({ searchParams }: ProductsPageProps) {
+  const page = Number(searchParams?.page ?? 1);
+  const sort = searchParams?.sort ?? "popular";
+  const category = searchParams?.category ?? "";
+  const tag = searchParams?.tag ?? "";
+
+  // Hent produkter fra API eller lib
+  const { products, total } = await getProducts({
+    page,
+    sort,
+    category,
+    tag,
+  });
+
+  const pageSize = 12;
+  const totalPages = Math.ceil(total / pageSize);
+
   return (
     <PageShell>
       <PageSection>
@@ -16,9 +46,47 @@ export default function ProductsPage() {
             Utforsk våre premium longevity‑produkter utviklet for energi, fokus og velvære.
           </p>
 
-          <ProductsGrid />
+          {/* Filtrering */}
+          <div className="flex items-center gap-6 mb-10">
+            <Select
+              label="Sorter"
+              value={sort}
+              onChange={(value) => {
+                window.location.href = `/products?sort=${value}`;
+              }}
+              options={[
+                { label: "Mest populære", value: "popular" },
+                { label: "Pris: lav til høy", value: "price-asc" },
+                { label: "Pris: høy til lav", value: "price-desc" },
+                { label: "Nyheter", value: "new" },
+              ]}
+            />
+
+            <Checkbox
+              label="Kun på lager"
+              checked={tag === "in-stock"}
+              onChange={(checked) => {
+                window.location.href = checked
+                  ? `/products?tag=in-stock`
+                  : `/products`;
+              }}
+            />
+          </div>
+
+          {/* Produktgrid */}
+          <ProductsGrid products={products} />
+
+          {/* Paginering */}
+          <div className="mt-12">
+            <Pagination
+              currentPage={page}
+              totalPages={totalPages}
+              baseUrl="/products"
+            />
+          </div>
         </PageContainer>
       </PageSection>
     </PageShell>
   );
 }
+
