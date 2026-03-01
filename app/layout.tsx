@@ -2,6 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { ReactNode } from "react";
 import { Providers } from "../providers";
+
 import Header from "../components/layout/Header";
 import Navigation from "../components/layout/Navigation";
 import Sidebar from "../components/layout/Sidebar";
@@ -14,13 +15,9 @@ export const metadata: Metadata = {
   description: "Nettbutikk for longevity-kosttilskudd fra Vitalityboost"
 };
 
-export default function RootLayout({
-  children
-}: {
-  children: ReactNode;
-}) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="no">
+    <html lang="no" suppressHydrationWarning>
       <body className="min-h-screen bg-white text-gray-900 flex flex-col">
         <Providers>
           <Header />
