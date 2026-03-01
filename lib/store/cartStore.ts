@@ -1,64 +1,79 @@
-// lib/store/cartStore.ts
+import { create } from "zustand";
+import { getCart, addToCart, removeFromCart, clearCart } from "@/lib/api/cart";
+import { Cart, CartItem, AddToCartRequest } from "@/types/cart";
 
-import { Cart, CartItem } from "@/types";
+interface CartState {
+  cart: Cart | null;
+  loading: boolean;
+  error: string | null;
 
-class CartStore {
-  private cart: Cart = { items: [] };
-
-  getCart(): Cart {
-    return this.cart;
-  }
-
-  addItem(productId: string, variantId: string, quantity: number = 1): void {
-    const existing = this.cart.items.find(
-      (item) =>
-        item.productId === productId && item.variantId === variantId
-    );
-
-    if (existing) {
-      existing.quantity += quantity;
-    } else {
-      const newItem: CartItem = {
-        productId,
-        variantId,
-        quantity,
-      };
-      this.cart.items.push(newItem);
-    }
-  }
-
-  removeItem(productId: string, variantId: string): void {
-    this.cart.items = this.cart.items.filter(
-      (item) =>
-        !(item.productId === productId && item.variantId === variantId)
-    );
-  }
-
-  updateQuantity(
-    productId: string,
-    variantId: string,
-    quantity: number
-  ): void {
-    const item = this.cart.items.find(
-      (i) =>
-        i.productId === productId && i.variantId === variantId
-    );
-
-    if (item) {
-      item.quantity = quantity;
-    }
-  }
-
-  clearCart(): void {
-    this.cart.items = [];
-  }
-
-  getTotal(): number {
-    return this.cart.items.reduce((sum, item) => {
-      // Pris hentes fra backend ved checkout — frontend lagrer kun antall
-      return sum;
-    }, 0);
-  }
+  fetchCart: (userId: string) => Promise<void>;
+  addItem: (data: AddToCartRequest) => Promise<void>;
+  removeItem: (itemId: string) => Promise<void>;
+  clear: (userId: string) => Promise<void>;
 }
 
-export const cartStore = new CartStore();
+export const useCartStore = create<CartState>((set) => ({
+  cart: null,
+  loading: false,
+  error: null,
+
+  async fetchCart(userId: string) {
+    set({ loading: true, error: null });
+    try {
+      const cart = await getCart(userId);
+      set({ cart });
+    } catch (err: any) {
+      set({ error: err.message });
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  async addItem(data: AddToCartRequest) {
+    set({ loading: true, error: null });
+    try {
+      const newItem: CartItem = await addToCart(data);
+      set((state) => ({
+        cart: state.cart
+          ? { ...state.cart, items: [...state.cart.items, newItem] }
+          : { items: [newItem] },
+      }));
+    } catch (err: any) {
+      set({ error: err.message });
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  async removeItem(itemId: string) {
+    set({ loading: true, error: null });
+    try {
+      await removeFromCart(itemId);
+      set((state) => ({
+        cart: state.cart
+          ? {
+              ...state.cart,
+              items: state.cart.items.filter((item) => item.id !== itemId),
+            }
+          : null,
+      }));
+    } catch (err: any) {
+      set({ error: err.message });
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  async clear(userId: string) {
+    set({ loading: true, error: null });
+    try {
+      await clearCart(userId);
+      set({ cart: { items: [] } });
+    } catch (err: any) {
+      set({ error: err.message });
+    } finally {
+      set({ loading: false });
+    }
+  },
+}));
