@@ -1,5 +1,3 @@
-// calc.ts
-
 import { CartItem, Product, Discount } from "@/types";
 
 /**
