@@ -1,0 +1,8 @@
+model Order {
+  id              String   @id @default(cuid())
+  stripeSessionId String   @unique
+  items           Json
+  total           Int
+  status          String   @default("pending")
+  createdAt       DateTime @default(now())
+}
