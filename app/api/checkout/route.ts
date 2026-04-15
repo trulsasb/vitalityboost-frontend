@@ -1,37 +1,35 @@
 import { NextResponse } from "next/server";
+import Stripe from "stripe";
 
-export async function POST(request: Request) {
-  const body = await request.json();
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+  apiVersion: "2023-10-16",
+});
 
-  const { name, email, address, zip, city, items } = body;
+export async function POST(req: Request) {
+  try {
+    const { items } = await req.json();
 
-  if (
-    !name ||
-    !email ||
-    !address ||
-    !zip ||
-    !city ||
-    !Array.isArray(items) ||
-    items.length === 0
-  ) {
-    return NextResponse.json(
-      { error: "Ugyldig bestillingsdata." },
-      { status: 400 }
-    );
+    const lineItems = items.map((item: any) => ({
+      price_data: {
+        currency: "nok",
+        product_data: {
+          name: item.name,
+        },
+        unit_amount: item.price * 100,
+      },
+      quantity: item.quantity,
+    }));
+
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      payment_method_types: ["card"],
+      line_items: lineItems,
+      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/checkout/success`,
+      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/checkout/cancel`,
+    });
+
+    return NextResponse.json({ url: session.url });
+  } catch {
+    return NextResponse.json({ error: "Stripe error" }, { status: 500 });
   }
-
-  const total = items.reduce(
-    (sum: number, item: { id: string; quantity: number; price: number }) =>
-      sum + item.quantity * item.price,
-    0
-  );
-
-  return NextResponse.json({
-    success: true,
-    order: {
-      customer: { name, email, address, zip, city },
-      items,
-      total,
-    },
-  });
 }
