@@ -16,18 +16,31 @@ export default function CheckoutPage() {
     city: "",
   });
 
+  const [loading, setLoading] = useState(false);
+
   const handleChange = (field: string, value: string) => {
     setCustomer((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = () => {
-    if (!customer.name || !customer.email) {
-      alert("Vennligst fyll ut navn og e‑post.");
-      return;
-    }
+  const handleSubmit = async () => {
+    if (!customer.name || !customer.email) return alert("Fyll ut navn og e‑post.");
 
-    // Midlertidig redirect – her kommer Stripe senere
-    window.location.href = "/checkout/success";
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        body: JSON.stringify({ items }),
+      });
+
+      const data = await res.json();
+
+      if (data.url) window.location.href = data.url;
+      else throw new Error();
+    } catch {
+      setLoading(false);
+      alert("Kunne ikke starte betaling.");
+    }
   };
 
   if (items.length === 0) {
@@ -44,7 +57,6 @@ export default function CheckoutPage() {
       <h1 className="text-3xl font-semibold mb-10">Kasse</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-        {/* Kundedetaljer */}
         <div className="lg:col-span-2 space-y-6">
           <div>
             <label className="block mb-2 font-medium">Navn</label>
@@ -103,7 +115,6 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* Produkter i bestillingen */}
           <div className="pt-6 border-t">
             <h2 className="text-xl font-semibold mb-4">Dine produkter</h2>
 
@@ -116,13 +127,15 @@ export default function CheckoutPage() {
 
           <button
             onClick={handleSubmit}
-            className="mt-8 w-full bg-black text-white py-4 rounded-lg text-lg"
+            disabled={loading}
+            className={`mt-8 w-full py-4 rounded-lg text-lg ${
+              loading ? "bg-gray-400" : "bg-black text-white"
+            }`}
           >
-            Fullfør bestilling
+            {loading ? "Starter betaling..." : "Fullfør bestilling"}
           </button>
         </div>
 
-        {/* Oppsummering */}
         <CartSummary />
       </div>
     </div>
