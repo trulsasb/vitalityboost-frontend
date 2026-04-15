@@ -9,17 +9,17 @@ export default function CheckoutCancelPage() {
 
       <div className="flex justify-center gap-4">
         <a
-          href="/checkout"
+          href="/cart"
           className="bg-black text-white px-6 py-3 rounded-lg text-lg"
         >
-          Prøv igjen
+          Til handlekurven
         </a>
 
         <a
-          href="/cart"
+          href="/"
           className="bg-gray-200 text-black px-6 py-3 rounded-lg text-lg"
         >
-          Til handlekurven
+          Til forsiden
         </a>
       </div>
     </div>
