@@ -4,7 +4,7 @@ export default function CheckoutSuccessPage() {
       <h1 className="text-4xl font-semibold mb-6">Takk for bestillingen!</h1>
 
       <p className="text-gray-600 text-lg mb-10">
-        Vi har mottatt bestillingen din og sender deg en bekreftelse på e‑post.
+        Betalingen er mottatt, og vi har sendt en bekreftelse til e‑postadressen din.
       </p>
 
       <a
