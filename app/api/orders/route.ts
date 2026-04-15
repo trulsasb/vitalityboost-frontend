@@ -1,43 +1,20 @@
 import { NextResponse } from "next/server";
+import { PrismaClient } from "@prisma/client";
 
+const prisma = new PrismaClient();
+
+// Hent alle ordre (for admin)
 export async function GET() {
-  return NextResponse.json({
-    orders: [],
-  });
-}
+  try {
+    const orders = await prisma.order.findMany({
+      orderBy: { createdAt: "desc" },
+    });
 
-export async function POST(request: Request) {
-  const body = await request.json();
-
-  const { customer, items, total } = body;
-
-  if (
-    !customer ||
-    !customer.name ||
-    !customer.email ||
-    !customer.address ||
-    !customer.zip ||
-    !customer.city ||
-    !Array.isArray(items) ||
-    items.length === 0 ||
-    typeof total !== "number"
-  ) {
+    return NextResponse.json(orders);
+  } catch {
     return NextResponse.json(
-      { error: "Ugyldig ordredata." },
-      { status: 400 }
+      { error: "Kunne ikke hente ordre." },
+      { status: 500 }
     );
   }
-
-  const order = {
-    id: crypto.randomUUID(),
-    customer,
-    items,
-    total,
-    createdAt: new Date().toISOString(),
-  };
-
-  return NextResponse.json({
-    success: true,
-    order,
-  });
 }
