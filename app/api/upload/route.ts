@@ -5,25 +5,31 @@ import path from "path";
 export async function POST(req: Request) {
   try {
     const formData = await req.formData();
-    const file = formData.get("file") as File | null;
+    const files = formData.getAll("files") as File[];
 
-    if (!file) {
-      return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
+    if (!files || files.length === 0) {
+      return NextResponse.json({ error: "No files uploaded" }, { status: 400 });
     }
-
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
 
     const uploadDir = path.join(process.cwd(), "public", "uploads");
     await mkdir(uploadDir, { recursive: true });
 
-    const filePath = path.join(uploadDir, file.name);
-    await writeFile(filePath, buffer);
+    const urls: string[] = [];
 
-    return NextResponse.json({
-      url: `/uploads/${file.name}`,
-      filename: file.name,
-    });
+    for (const file of files) {
+      const bytes = await file.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+
+      const safeName = file.name.replace(/\s+/g, "_");
+      const filename = `${Date.now()}-${safeName}`;
+      const filePath = path.join(uploadDir, filename);
+
+      await writeFile(filePath, buffer);
+
+      urls.push(`/uploads/${filename}`);
+    }
+
+    return NextResponse.json({ urls });
   } catch (error) {
     console.error("Upload error:", error);
     return NextResponse.json({ error: "Upload failed" }, { status: 500 });
