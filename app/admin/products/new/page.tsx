@@ -12,13 +12,55 @@ export default function NewProductPage() {
     price: "",
     category: "",
     active: true,
+    images: [] as string[],
   });
 
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
 
   function updateField(key: string, value: any) {
     setForm((prev) => ({ ...prev, [key]: value }));
+  }
+
+  async function uploadImages(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setUploading(true);
+    setError("");
+
+    const formData = new FormData();
+    for (const file of files) {
+      formData.append("files", file);
+    }
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Feil ved opplasting");
+        return;
+      }
+
+      updateField("images", [...form.images, ...data.urls]);
+    } catch (err) {
+      setError("Ukjent feil ved opplasting");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  function removeImage(url: string) {
+    updateField(
+      "images",
+      form.images.filter((img) => img !== url)
+    );
   }
 
   async function submit(e: React.FormEvent) {
@@ -36,6 +78,7 @@ export default function NewProductPage() {
           price: Number(form.price),
           category: form.category || null,
           active: form.active,
+          images: form.images,
         }),
       });
 
@@ -95,32 +138,3 @@ export default function NewProductPage() {
         </div>
 
         <div>
-          <label className="block mb-1 font-medium">Kategori</label>
-          <input
-            type="text"
-            value={form.category}
-            onChange={(e) => updateField("category", e.target.value)}
-            className="border border-gray-300 rounded-md px-3 py-2 w-full"
-          />
-        </div>
-
-        <div className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={form.active}
-            onChange={(e) => updateField("active", e.target.checked)}
-          />
-          <label className="font-medium">Aktiv</label>
-        </div>
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition disabled:opacity-50"
-        >
-          {loading ? "Lagrer..." : "Opprett produkt"}
-        </button>
-      </form>
-    </div>
-  );
-}
