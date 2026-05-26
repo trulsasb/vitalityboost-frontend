@@ -22,12 +22,19 @@ export default async function ProductPage({ params }: ProductPageProps) {
       <PageSection>
         <PageContainer>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-            <div>
-              <img
-                src={product.image}
-                alt={product.name}
-                className="w-full rounded-lg shadow-md"
-              />
+            <div className="space-y-4">
+              {product.images && product.images.length > 0 ? (
+                product.images.map((url) => (
+                  <img
+                    key={url}
+                    src={url}
+                    alt={product.name}
+                    className="w-full rounded-lg shadow-md"
+                  />
+                ))
+              ) : (
+                <div className="w-full h-64 bg-gray-200 rounded-lg" />
+              )}
             </div>
 
             <div className="space-y-6">
@@ -35,7 +42,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 {product.name}
               </h1>
 
-              <p className="text-lg text-gray-700">{product.description}</p>
+              {product.description && (
+                <p className="text-lg text-gray-700">{product.description}</p>
+              )}
 
               <p className="text-3xl font-semibold text-gray-900">
                 {product.price} kr
