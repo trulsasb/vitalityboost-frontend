@@ -3,10 +3,9 @@ import { PageSection } from "@/components/layout/PageSection";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { ProductsGrid } from "@/components/products/ProductsGrid";
 import { Pagination } from "@/components/ui/Pagination";
-import { Select } from "@/components/ui/Select";
-import { Checkbox } from "@/components/ui/Checkbox";
+import Filters from "./Filters";
 
-import { getProducts } from "@/lib/products"; // hvis du har denne – hvis ikke, bruker vi fetch
+import { getProducts } from "@/lib/products";
 
 interface ProductsPageProps {
   searchParams?: {
@@ -23,7 +22,6 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const category = searchParams?.category ?? "";
   const tag = searchParams?.tag ?? "";
 
-  // Hent produkter fra API eller lib
   const { products, total } = await getProducts({
     page,
     sort,
@@ -46,37 +44,10 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             Utforsk våre premium longevity‑produkter utviklet for energi, fokus og velvære.
           </p>
 
-          {/* Filtrering */}
-          <div className="flex items-center gap-6 mb-10">
-            <Select
-              label="Sorter"
-              value={sort}
-              onChange={(value) => {
-                window.location.href = `/products?sort=${value}`;
-              }}
-              options={[
-                { label: "Mest populære", value: "popular" },
-                { label: "Pris: lav til høy", value: "price-asc" },
-                { label: "Pris: høy til lav", value: "price-desc" },
-                { label: "Nyheter", value: "new" },
-              ]}
-            />
+          <Filters sort={sort} tag={tag} />
 
-            <Checkbox
-              label="Kun på lager"
-              checked={tag === "in-stock"}
-              onChange={(checked) => {
-                window.location.href = checked
-                  ? `/products?tag=in-stock`
-                  : `/products`;
-              }}
-            />
-          </div>
-
-          {/* Produktgrid */}
           <ProductsGrid products={products} />
 
-          {/* Paginering */}
           <div className="mt-12">
             <Pagination
               currentPage={page}
@@ -89,4 +60,3 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     </PageShell>
   );
 }
-
