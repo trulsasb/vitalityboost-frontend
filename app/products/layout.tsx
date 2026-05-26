@@ -1,11 +1,9 @@
+import { PageShell } from "@/components/layout/PageShell";
+
 export default function ProductsLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <div className="min-h-screen bg-white">
-      {children}
-    </div>
-  );
+  return <PageShell>{children}</PageShell>;
 }
