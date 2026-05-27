@@ -1,11 +1,14 @@
-import Link from "next/link";
+import OrdersTable from "./components/OrdersTable";
 
 async function getOrders(search: string) {
   const query = search ? `?search=${encodeURIComponent(search)}` : "";
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/orders${query}`, {
-    method: "GET",
-    cache: "no-store",
-  });
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/orders${query}`,
+    {
+      method: "GET",
+      cache: "no-store",
+    }
+  );
 
   if (!res.ok) {
     throw new Error("Kunne ikke hente ordre");
@@ -53,62 +56,10 @@ export default async function OrdersPage({
       </form>
 
       {error && (
-        <div className="p-4 bg-red-100 text-red-700 rounded-md">
-          {error}
-        </div>
+        <div className="p-4 bg-red-100 text-red-700 rounded-md">{error}</div>
       )}
 
-      <div className="overflow-x-auto border rounded-md">
-        <table className="min-w-full text-sm">
-          <thead className="bg-gray-100 border-b">
-            <tr>
-              <th className="text-left p-3 font-medium">Ordre-ID</th>
-              <th className="text-left p-3 font-medium">Kunde</th>
-              <th className="text-left p-3 font-medium">Beløp</th>
-              <th className="text-left p-3 font-medium">Status</th>
-              <th className="text-left p-3 font-medium">Betaling</th>
-              <th className="text-left p-3 font-medium">Dato</th>
-              <th className="text-right p-3 font-medium">Handling</th>
-            </tr>
-          </thead>
-          <tbody>
-            {orders.length === 0 && (
-              <tr>
-                <td
-                  colSpan={7}
-                  className="text-center p-6 text-gray-500"
-                >
-                  Ingen ordre funnet
-                </td>
-              </tr>
-            )}
-
-            {orders.map((order) => (
-              <tr
-                key={order.id}
-                className="border-b hover:bg-gray-50 transition"
-              >
-                <td className="p-3">{order.id}</td>
-                <td className="p-3">{order.customer_name || "Ukjent"}</td>
-                <td className="p-3">{order.total_amount} kr</td>
-                <td className="p-3">{order.status}</td>
-                <td className="p-3">{order.payment_status}</td>
-                <td className="p-3">
-                  {new Date(order.created_at).toLocaleDateString("no-NO")}
-                </td>
-                <td className="p-3 text-right">
-                  <Link
-                    href={`/admin/orders/${order.id}`}
-                    className="text-blue-600 hover:underline"
-                  >
-                    Åpne
-                  </Link>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <OrdersTable orders={orders} />
     </div>
   );
 }
