@@ -7,7 +7,7 @@ interface HeaderProps {
   className?: string;
 }
 
-export const Header: React.FC<HeaderProps> = ({ className = "" }) => {
+export default function Header({ className = "" }: HeaderProps) {
   return (
     <header
       className={`w-full border-b border-gray-200 bg-white/80 backdrop-blur-sm ${className}`}
@@ -31,4 +31,4 @@ export const Header: React.FC<HeaderProps> = ({ className = "" }) => {
       </div>
     </header>
   );
-};
+}
