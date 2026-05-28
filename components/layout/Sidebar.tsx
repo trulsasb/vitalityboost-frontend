@@ -8,7 +8,7 @@ interface SidebarProps {
   className?: string;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ className = "" }) => {
+export default function Sidebar({ className = "" }: SidebarProps) {
   const pathname = usePathname();
 
   const links = [
@@ -22,7 +22,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = "" }) => {
   ];
 
   const isActive = (href: string) => {
-    // Markerer også aktive undersider, f.eks. /admin/products/123
     if (href === "/admin") return pathname === "/admin";
     return pathname.startsWith(href);
   };
@@ -60,4 +59,4 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = "" }) => {
       </div>
     </aside>
   );
-};
+}
