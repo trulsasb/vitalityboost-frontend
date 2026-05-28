@@ -5,12 +5,11 @@ interface MainProps {
   className?: string;
 }
 
-export const Main: React.FC<MainProps> = ({ children, className = "" }) => {
+export default function Main({ children, className = "" }: MainProps) {
   return (
-    <main
-      className={`w-full min-h-screen bg-white ${className}`}
-    >
+    <main className={`w-full min-h-screen bg-white ${className}`}>
       {children}
     </main>
   );
-};
+}
+
