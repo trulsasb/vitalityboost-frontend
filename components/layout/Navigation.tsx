@@ -8,7 +8,7 @@ interface NavigationProps {
   className?: string;
 }
 
-export const Navigation: React.FC<NavigationProps> = ({ className = "" }) => {
+export default function Navigation({ className = "" }: NavigationProps) {
   const pathname = usePathname();
 
   const links = [
@@ -39,4 +39,5 @@ export const Navigation: React.FC<NavigationProps> = ({ className = "" }) => {
       })}
     </nav>
   );
-};
+}
+
