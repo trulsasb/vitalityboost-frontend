@@ -1,10 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { Header } from "./Header";
-import { Footer } from "./Footer";
-import { Main } from "./Main";
-import { Sidebar } from "./Sidebar";
+import Header from "./Header";
+import Footer from "./Footer";
+import Main from "./Main";
+import Sidebar from "./Sidebar";
 
 interface PageShellProps {
   children: React.ReactNode;
@@ -12,19 +12,17 @@ interface PageShellProps {
   className?: string;
 }
 
-export const PageShell: React.FC<PageShellProps> = ({
+export default function PageShell({
   children,
   sidebar = false,
   className = "",
-}) => {
+}: PageShellProps) {
   return (
     <div className={`min-h-screen flex flex-col bg-white ${className}`}>
       <Header />
 
       <div className="flex flex-1">
-        {sidebar && (
-          <Sidebar className="hidden lg:block" />
-        )}
+        {sidebar && <Sidebar className="hidden lg:block" />}
 
         <Main className="flex-1">
           {children}
@@ -34,4 +32,4 @@ export const PageShell: React.FC<PageShellProps> = ({
       <Footer />
     </div>
   );
-};
+}
