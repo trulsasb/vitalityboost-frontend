@@ -5,10 +5,10 @@ interface PageContainerProps {
   className?: string;
 }
 
-export const PageContainer: React.FC<PageContainerProps> = ({
+export default function PageContainer({
   children,
   className = "",
-}) => {
+}: PageContainerProps) {
   return (
     <div
       className={`mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8 ${className}`}
@@ -16,4 +16,4 @@ export const PageContainer: React.FC<PageContainerProps> = ({
       {children}
     </div>
   );
-};
+}
