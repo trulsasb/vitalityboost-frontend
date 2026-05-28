@@ -3,12 +3,12 @@ import type { Metadata } from "next";
 import { ReactNode } from "react";
 import { Providers } from "../providers";
 
-import Header from "../components/layout/Header";
-import Navigation from "../components/layout/Navigation";
-import Sidebar from "../components/layout/Sidebar";
-import Footer from "../components/layout/Footer";
-import PageShell from "../components/layout/PageShell";
-import PageContainer from "../components/layout/PageContainer";
+import Header from "@/components/layout/Header";
+import Navigation from "@/components/layout/Navigation";
+import Sidebar from "@/components/layout/Sidebar";
+import Footer from "@/components/layout/Footer";
+import PageShell from "@/components/layout/PageShell";
+import PageContainer from "@/components/layout/PageContainer";
 
 export const metadata: Metadata = {
   title: "Vitalityboost Nettbutikk",
