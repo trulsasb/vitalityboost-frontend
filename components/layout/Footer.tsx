@@ -7,7 +7,7 @@ interface FooterProps {
   className?: string;
 }
 
-export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
+export default function Footer({ className = "" }: FooterProps) {
   return (
     <footer
       className={`w-full border-t border-gray-200 bg-white/80 backdrop-blur-sm ${className}`}
@@ -33,4 +33,4 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
       </div>
     </footer>
   );
-};
+}
