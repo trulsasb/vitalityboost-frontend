@@ -51,8 +51,11 @@ export default function BrandsPage() {
             className="border rounded-md p-4 hover:bg-gray-50 transition"
           >
             <h2 className="font-semibold text-lg">{brand.name}</h2>
+
             {brand.description && (
-              <p classnName="text-sm text-gray-600 mt-1">{brand.description}</p>
+              <p className="text-sm text-gray-600 mt-1">
+                {brand.description}
+              </p>
             )}
           </div>
         ))}
