@@ -20,7 +20,8 @@
     "lucide-react": "0.460.0",
     "stripe": "14.21.0",
     "@prisma/client": "5.14.0",
-    "react-circular-progressbar": "^2.1.0"
+    "react-circular-progressbar": "^2.1.0",
+    "recharts": "^2.12.2"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
