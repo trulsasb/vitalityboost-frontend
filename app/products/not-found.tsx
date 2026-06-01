@@ -1,6 +1,6 @@
-import { PageShell } from "@/components/layout/PageShell";
-import { PageSection } from "@/components/layout/PageSection";
-import { PageContainer } from "@/components/layout/PageContainer";
+import PageShell from "@/components/layout/PageShell";
+import PageSection from "@/components/layout/PageSection";
+import PageContainer from "@/components/layout/PageContainer";
 
 export default function ProductsNotFound() {
   return (
