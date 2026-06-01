@@ -1,17 +1,25 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 
 export async function GET(
-  req: Request,
+  request: Request,
   { params }: { params: { id: string } }
 ) {
-  const product = await prisma.product.findUnique({
-    where: { id: params.id },
-  });
+  try {
+    const product = await prisma.product.findUnique({
+      where: { id: params.id },
+      include: {
+        images: true,
+      },
+    });
 
-  if (!product) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
+    if (!product) {
+      return new NextResponse("Product not found", { status: 404 });
+    }
+
+    return NextResponse.json(product);
+  } catch (error) {
+    console.error("Error fetching product:", error);
+    return new NextResponse("Internal Server Error", { status: 500 });
   }
-
-  return NextResponse.json(product);
 }
