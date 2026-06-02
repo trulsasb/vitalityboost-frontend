@@ -40,4 +40,3 @@ export default function Navigation({ className = "" }: NavigationProps) {
     </nav>
   );
 }
-
