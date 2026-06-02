@@ -2,7 +2,7 @@
 
 import { useCart } from "@/app/cart/CartProvider";
 import CartItem from "@/app/cart/Drawer/CartItem";
-import CartSummary from "@/app/cart/CartSummary";
+import { CartSummary } from "@/app/cart/CartSummary";
 import { useState } from "react";
 
 export default function CheckoutPage() {
