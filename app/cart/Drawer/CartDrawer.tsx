@@ -1,7 +1,7 @@
 "use client";
 
 import { useCart } from "@/app/cart/CartProvider";
-import { CartItem } from "@/app/cart/CartItem";
+import CartItem from "@/app/cart/Drawer/CartItem";
 import { CartSummary } from "@/app/cart/CartSummary";
 import { useState } from "react";
 
@@ -40,7 +40,7 @@ export function CartDrawer() {
         ) : (
           <div className="space-y-6">
             {items.map((item) => (
-              <CartItem key={item.id} id={item.id} quantity={item.quantity} />
+              <CartItem key={item.id} item={item} />
             ))}
 
             <CartSummary />
