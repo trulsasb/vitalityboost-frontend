@@ -2,7 +2,7 @@
 
 import { useCart } from "@/app/cart/CartProvider";
 import CartItem from "@/app/cart/Drawer/CartItem";
-import { CartSummary } from "@/app/cart/CartSummary";
+import CartSummary from "@/app/cart/CartSummary";
 import { useState } from "react";
 
 export default function CheckoutPage() {
@@ -120,7 +120,7 @@ export default function CheckoutPage() {
 
             <div className="space-y-4">
               {items.map((item) => (
-                <CartItem key={item.id} id={item.id} quantity={item.quantity} />
+                <CartItem key={item.id} item={item} />
               ))}
             </div>
           </div>
