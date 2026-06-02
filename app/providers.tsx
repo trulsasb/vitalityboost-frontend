@@ -7,7 +7,6 @@ import { Toaster } from "react-hot-toast";
 import { useState } from "react";
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  // Opprettes én gang per klient for å unngå re-instansiering
   const [queryClient] = useState(() => new QueryClient());
 
   return (
@@ -16,3 +15,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
         {children}
         <Toaster position="top-right" />
         <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
+    </ThemeProvider>
+  );
+}
