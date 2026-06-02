@@ -11,7 +11,6 @@ export default function CartDrawer() {
 
   return (
     <>
-      {/* Toggle button */}
       <button
         onClick={() => setOpen(true)}
         className="fixed top-6 right-6 z-40 bg-black text-white px-4 py-2 rounded-lg"
@@ -19,7 +18,6 @@ export default function CartDrawer() {
         Handlekurv ({items.length})
       </button>
 
-      {/* Backdrop */}
       {open && (
         <div
           onClick={() => setOpen(false)}
@@ -27,7 +25,6 @@ export default function CartDrawer() {
         />
       )}
 
-      {/* Drawer */}
       <div
         className={`fixed top-0 right-0 h-full w-96 bg-white shadow-xl z-50 p-6 transform transition-transform ${
           open ? "translate-x-0" : "translate-x-full"
@@ -40,7 +37,14 @@ export default function CartDrawer() {
         ) : (
           <div className="space-y-6">
             {items.map((item) => (
-              <CartItem key={item.id} {...item} />
+              <CartItem
+                key={item.productId}
+                id={item.productId}
+                name={item.title}
+                price={item.price}
+                image={item.image ?? "/placeholder.png"}
+                quantity={item.quantity}
+              />
             ))}
 
             <CartSummary />
