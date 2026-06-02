@@ -2,7 +2,7 @@
 
 import { useCart } from "@/app/cart/CartProvider";
 import CartItem from "@/app/cart/Drawer/CartItem";
-import { CartSummary } from "@/app/cart/CartSummary";
+import CartSummary from "@/app/cart/CartSummary";
 
 export default function CartPage() {
   const { items } = useCart();
@@ -20,7 +20,7 @@ export default function CartPage() {
           {/* Items */}
           <div className="lg:col-span-2 space-y-8">
             {items.map((item) => (
-              <CartItem key={item.id} id={item.id} quantity={item.quantity} />
+              <CartItem key={item.id} item={item} />
             ))}
           </div>
 
