@@ -7,27 +7,28 @@ import { CartSummary } from "@/app/cart/CartSummary";
 export default function CartPage() {
   const { items } = useCart();
 
-  const isEmpty = items.length === 0;
-
   return (
-    <div className="max-w-5xl mx-auto py-16 px-4">
-      <h1 className="text-4xl font-bold text-gray-900 mb-10">Handlekurv</h1>
+    <div className="container mx-auto py-12">
+      <h1 className="text-3xl font-semibold mb-8">Handlekurv</h1>
 
-      {isEmpty ? (
-        <p className="text-lg text-gray-600">Handlekurven er tom.</p>
+      {items.length === 0 ? (
+        <p className="text-gray-600">Handlekurven er tom.</p>
       ) : (
-        <div className="grid gap-12 lg:grid-cols-3">
-          {/* Items */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           <div className="lg:col-span-2 space-y-8">
             {items.map((item) => (
-              <CartItem key={item.id} item={item} />
+              <CartItem
+                key={item.productId}
+                id={item.productId}
+                name={item.title}
+                price={item.price}
+                image={item.image ?? "/placeholder.png"}
+                quantity={item.quantity}
+              />
             ))}
           </div>
 
-          {/* Summary */}
-          <div>
-            <CartSummary />
-          </div>
+          <CartSummary />
         </div>
       )}
     </div>
