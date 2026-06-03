@@ -49,7 +49,7 @@ export function FeatureGrid({
                 </div>
               )}
 
-              <h3 classname="text-xl font-semibold text-gray-900">
+              <h3 className="text-xl font-semibold text-gray-900">
                 {feature.title}
               </h3>
 
