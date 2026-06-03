@@ -1,15 +1,27 @@
-model Order {
-  id              String   @id @default(cuid())
- datasource db {
+datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 generator client {
   provider = "prisma-client-js"
-}ipeSessionId String   @unique
+}
+
+model Order {
+  id              String   @id @default(cuid())
+  stripeSessionId String   @unique
   items           Json
   total           Int
   status          String   @default("pending")
   createdAt       DateTime @default(now())
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String?
+  email     String?
+  phone     String?
+  address   String?
+  orders    Order[]
+  createdAt DateTime @default(now())
 }
