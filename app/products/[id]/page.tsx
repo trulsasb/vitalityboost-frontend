@@ -42,10 +42,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 {product.name}
               </h1>
 
-              {product.description && (
-                <p className="text-lg text-gray-700">{product.description}</p>
-              )}
-
               <p className="text-3xl font-semibold text-gray-900">
                 {product.price} kr
               </p>
