@@ -3,7 +3,7 @@ interface PricingTier {
   price: string;
   description?: string;
   features: string[];
-  cta: React.ReactNode;
+  cta?: React.ReactNode;
   highlighted?: boolean;
 }
 
@@ -73,7 +73,7 @@ export function Pricing({
                 ))}
               </ul>
 
-              <div className="mt-8">{tier.cta}</div>
+              {tier.cta && <div className="mt-8">{tier.cta}</div>}
             </div>
           ))}
         </div>
