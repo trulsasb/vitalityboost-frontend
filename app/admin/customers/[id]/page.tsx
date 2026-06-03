@@ -15,7 +15,7 @@ export default function CustomerDetailPage() {
   useEffect(() => {
     async function fetchCustomer() {
       try {
-        const res = await fetch(`/api/admin/customers/${customerId}`);
+        const res = await fetch(`/api/customers/${customerId}`);
         if (!res.ok) throw new Error("Failed to fetch customer");
         const data = await res.json();
         setCustomer(data);
