@@ -1,5 +1,6 @@
 interface FeatureWithImageProps {
-  title: string;
+  heading?: string;
+  title?: string; // Backwards compatibility
   description: string;
   image: React.ReactNode;
   reverse?: boolean;
@@ -8,6 +9,7 @@ interface FeatureWithImageProps {
 }
 
 export function FeatureWithImage({
+  heading,
   title,
   description,
   image,
@@ -15,6 +17,8 @@ export function FeatureWithImage({
   cta,
   className = "",
 }: FeatureWithImageProps) {
+  const displayTitle = heading ?? title;
+
   return (
     <section className={`w-full py-20 ${className}`}>
       <div
@@ -24,7 +28,7 @@ export function FeatureWithImage({
       >
         <div>
           <h2 className="text-3xl font-bold text-gray-900">
-            {title}
+            {displayTitle}
           </h2>
 
           <p className="mt-4 text-lg text-gray-600 max-w-lg">
