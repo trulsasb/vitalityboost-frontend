@@ -16,7 +16,6 @@ export async function getProductById(id: string) {
     return {
       id: product.id,
       name: product.name,
-      description: product.description,
       price: product.price,
       images: product.images?.map((img: { url: string }) => img.url) ?? [],
     };
