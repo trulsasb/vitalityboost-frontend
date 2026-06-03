@@ -24,7 +24,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             <div className="space-y-4">
               {product.images && product.images.length > 0 ? (
-                product.images.map((url) => (
+                product.images.map((url: string) => (
                   <img
                     key={url}
                     src={url}
