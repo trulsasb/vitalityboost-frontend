@@ -120,7 +120,14 @@ export default function CheckoutPage() {
 
             <div className="space-y-4">
               {items.map((item) => (
-                <CartItem key={item.id} item={item} />
+                <CartItem
+                  key={item.productId}
+                  id={item.productId}
+                  name={item.title}
+                  price={item.price}
+                  image={item.image ?? "/placeholder.png"}
+                  quantity={item.quantity}
+                />
               ))}
             </div>
           </div>
