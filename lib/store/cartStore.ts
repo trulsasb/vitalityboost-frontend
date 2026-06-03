@@ -41,4 +41,73 @@ export const useCartStore = create<CartState>((set) => ({
             cart: {
               items: [newItem],
               totals: {
-                subtotal: newItem.price * newItem
+                subtotal: newItem.price * newItem.quantity,
+                tax: 0,
+                total: newItem.price * newItem.quantity,
+              },
+            },
+          };
+        }
+
+        return {
+          cart: {
+            ...state.cart,
+            items: [...state.cart.items, newItem],
+          },
+        };
+      });
+    } catch (err: any) {
+      set({ error: err.message });
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  async removeItem(itemId: string) {
+    set({ loading: true, error: null });
+    try {
+      await removeFromCart(itemId);
+
+      set((state) => {
+        if (!state.cart) return { cart: null };
+
+        const updatedItems = state.cart.items.filter(
+          (item) => item.productId !== itemId
+        );
+
+        return {
+          cart: {
+            ...state.cart,
+            items: updatedItems,
+          },
+        };
+      });
+    } catch (err: any) {
+      set({ error: err.message });
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  async clear(userId: string) {
+    set({ loading: true, error: null });
+    try {
+      await clearCart(userId);
+
+      set({
+        cart: {
+          items: [],
+          totals: {
+            subtotal: 0,
+            tax: 0,
+            total: 0,
+          },
+        },
+      });
+    } catch (err: any) {
+      set({ error: err.message });
+    } finally {
+      set({ loading: false });
+    }
+  },
+}));
