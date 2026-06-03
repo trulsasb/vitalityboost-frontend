@@ -12,7 +12,7 @@ export function ProductQuantitySelector({
   return (
     <div className={`flex items-center gap-3 ${className}`}>
       <button
-        onClick={() => onChange(Math.max(1, value - 1)))}
+        onClick={() => onChange(Math.max(1, value - 1))}
         className="rounded bg-gray-200 px-3 py-1 text-sm"
       >
         -
