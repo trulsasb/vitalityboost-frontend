@@ -1,7 +1,7 @@
 interface NewsletterProps {
   heading: string;
   subheading?: string;
-  onSubmit: (email: string) => void;
+  onSubmit?: (email: string) => void;
   className?: string;
 }
 
@@ -13,6 +13,7 @@ export function Newsletter({
 }: NewsletterProps) {
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (!onSubmit) return;
     const form = e.currentTarget;
     const email = (form.elements.namedItem("email") as HTMLInputElement).value;
     onSubmit(email);
