@@ -18,7 +18,7 @@ export async function getProductById(id: string) {
       name: product.name,
       description: product.description,
       price: product.price,
-      images: product.images?.map((img) => img.url) ?? [],
+      images: product.images?.map((img: { url: string }) => img.url) ?? [],
     };
   } catch (error) {
     console.error("Error fetching product:", error);
