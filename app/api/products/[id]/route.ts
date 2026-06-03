@@ -1,15 +1,30 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+interface Params {
+  id: string;
+}
+
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: Params }
 ) {
+  const { id } = context.params;
+
   try {
     const product = await prisma.product.findUnique({
-      where: { id: params.id },
-      include: {
-        images: true,
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        createdAt: true,
+        images: {
+          select: {
+            id: true,
+            url: true,
+          },
+        },
       },
     });
 
@@ -23,3 +38,4 @@ export async function GET(
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 }
+
