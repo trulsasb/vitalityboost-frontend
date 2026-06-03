@@ -34,46 +34,11 @@ export const useCartStore = create<CartState>((set) => ({
     set({ loading: true, error: null });
     try {
       const newItem: CartItem = await addToCart(data);
-      set((state) => ({
-        cart: state.cart
-          ? { ...state.cart, items: [...state.cart.items, newItem] }
-          : { items: [newItem] },
-      }));
-    } catch (err: any) {
-      set({ error: err.message });
-    } finally {
-      set({ loading: false });
-    }
-  },
 
-  async removeItem(itemId: string) {
-    set({ loading: true, error: null });
-    try {
-      await removeFromCart(itemId);
-      set((state) => ({
-        cart: state.cart
-          ? {
-              ...state.cart,
-              items: state.cart.items.filter((item) => item.id !== itemId),
-            }
-          : null,
-      }));
-    } catch (err: any) {
-      set({ error: err.message });
-    } finally {
-      set({ loading: false });
-    }
-  },
-
-  async clear(userId: string) {
-    set({ loading: true, error: null });
-    try {
-      await clearCart(userId);
-      set({ cart: { items: [] } });
-    } catch (err: any) {
-      set({ error: err.message });
-    } finally {
-      set({ loading: false });
-    }
-  },
-}));
+      set((state) => {
+        if (!state.cart) {
+          return {
+            cart: {
+              items: [newItem],
+              totals: {
+                subtotal: newItem.price * newItem
