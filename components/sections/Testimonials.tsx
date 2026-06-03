@@ -8,7 +8,8 @@ interface Testimonial {
 interface TestimonialsProps {
   heading?: string;
   subheading?: string;
-  items: Testimonial[];
+  items?: Testimonial[];
+  testimonials?: Testimonial[];
   className?: string;
 }
 
@@ -16,8 +17,11 @@ export function Testimonials({
   heading,
   subheading,
   items,
+  testimonials,
   className = "",
 }: TestimonialsProps) {
+  const list = items ?? testimonials ?? [];
+
   return (
     <section className={`w-full py-20 ${className}`}>
       <div className="container mx-auto px-4 max-w-4xl text-center">
@@ -35,7 +39,7 @@ export function Testimonials({
         )}
 
         <div className="mt-12 grid gap-12 md:grid-cols-2">
-          {items.map((item, i) => (
+          {list.map((item, i) => (
             <div key={i} className="flex flex-col items-center text-center">
               {item.avatar && (
                 <div className="mb-4">{item.avatar}</div>
@@ -62,4 +66,3 @@ export function Testimonials({
     </section>
   );
 }
-
