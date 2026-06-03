@@ -10,7 +10,8 @@ interface PricingTier {
 interface PricingProps {
   heading?: string;
   subheading?: string;
-  tiers: PricingTier[];
+  tiers?: PricingTier[];
+  plans?: PricingTier[];
   className?: string;
 }
 
@@ -18,8 +19,11 @@ export function Pricing({
   heading,
   subheading,
   tiers,
+  plans,
   className = "",
 }: PricingProps) {
+  const list = tiers ?? plans ?? [];
+
   return (
     <section className={`w-full py-20 ${className}`}>
       <div className="container mx-auto px-4 text-center max-w-5xl">
@@ -37,7 +41,7 @@ export function Pricing({
         )}
 
         <div className="mt-12 grid gap-8 md:grid-cols-3">
-          {tiers.map((tier, i) => (
+          {list.map((tier, i) => (
             <div
               key={i}
               className={`border rounded-lg p-8 text-left ${
