@@ -2,7 +2,7 @@ import { useFormContext } from "react-hook-form";
 
 interface FormFieldProps {
   name: string;
-  children: React.ReactNode;
+  children: ((field: ReturnType<typeof register>) => React.ReactNode) | React.ReactNode;
   className?: string;
 }
 
@@ -12,7 +12,7 @@ export function FormField({ name, children, className = "" }: FormFieldProps) {
   return (
     <div className={className}>
       {typeof children === "function"
-        ? children({ ...register(name) })
+        ? children(register(name))
         : children}
     </div>
   );
