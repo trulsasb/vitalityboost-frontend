@@ -1,7 +1,8 @@
 interface HeroProps {
   title: string;
   subtitle?: string;
-  cta?: React.ReactNode;
+  ctaPrimary?: React.ReactNode;
+  ctaSecondary?: React.ReactNode;
   image?: React.ReactNode;
   className?: string;
 }
@@ -9,7 +10,8 @@ interface HeroProps {
 export function Hero({
   title,
   subtitle,
-  cta,
+  ctaPrimary,
+  ctaSecondary,
   image,
   className = "",
 }: HeroProps) {
@@ -28,7 +30,12 @@ export function Hero({
             </p>
           )}
 
-          {cta && <div className="mt-8">{cta}</div>}
+          {(ctaPrimary || ctaSecondary) && (
+            <div className="mt-8 flex gap-4">
+              {ctaPrimary}
+              {ctaSecondary}
+            </div>
+          )}
         </div>
 
         {image && (
