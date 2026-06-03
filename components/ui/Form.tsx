@@ -1,8 +1,8 @@
-import { FormProvider, useForm, SubmitHandler, FieldValues } from "react-hook-form";
+import { FormProvider, useForm, SubmitHandler, FieldValues, DefaultValues } from "react-hook-form";
 
 interface FormProps<T extends FieldValues> {
   children: React.ReactNode;
-  defaultValues?: T;
+  defaultValues?: DefaultValues<T>;
   onSubmit: SubmitHandler<T>;
   className?: string;
 }
