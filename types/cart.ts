@@ -13,12 +13,12 @@ export interface CartTotals {
   total: number;
 }
 
-export interface CartState {
+export interface Cart {
   items: CartItem[];
   totals: CartTotals;
 }
 
-export interface AddToCartPayload {
+export interface AddToCartRequest {
   productId: string;
   quantity?: number;
   variantId?: string;
