@@ -1,23 +1,20 @@
 import { useFormContext } from "react-hook-form";
+import type { ReactNode } from "react";
 
 interface FormControlProps {
   name: string;
-  children: React.ReactNode;
+  children: ((field: ReturnType<ReturnType<typeof useFormContext>["register"]>) => ReactNode) | ReactNode;
   className?: string;
 }
 
-export function FormControl({
-  name,
-  children,
-  className = "",
-}: FormControlProps) {
+export function FormControl({ name, children, className = "" }: FormControlProps) {
   const { register } = useFormContext();
+
+  const field = register(name);
 
   return (
     <div className={className}>
-      {typeof children === "function"
-        ? children({ ...register(name) })
-        : children}
+      {typeof children === "function" ? children(field) : children}
     </div>
   );
 }
