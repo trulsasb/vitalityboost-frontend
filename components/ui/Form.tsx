@@ -1,13 +1,13 @@
-import { FormProvider, useForm, SubmitHandler } from "react-hook-form";
+import { FormProvider, useForm, SubmitHandler, FieldValues } from "react-hook-form";
 
-interface FormProps<T> {
+interface FormProps<T extends FieldValues> {
   children: React.ReactNode;
   defaultValues?: T;
   onSubmit: SubmitHandler<T>;
   className?: string;
 }
 
-export function Form<T>({
+export function Form<T extends FieldValues>({
   children,
   defaultValues,
   onSubmit,
