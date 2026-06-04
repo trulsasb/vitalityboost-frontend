@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useCart } from "@/app/cart/CartProvider";
 import CartItem from "@/app/cart/Drawer/CartItem";
 import { CartSummary } from "@/app/cart/CartSummary";
@@ -34,3 +36,4 @@ export default function CartPage() {
     </div>
   );
 }
+
