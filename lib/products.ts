@@ -1,23 +1,20 @@
-import { prisma } from "./prisma";
-
 export async function getProductById(id: string) {
   try {
-    const product = await prisma.product.findUnique({
-      where: { id },
-      include: {
-        images: true,
-      },
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/${id}`, {
+      cache: "no-store",
     });
 
-    if (!product) {
+    if (!res.ok) {
       return null;
     }
+
+    const product = await res.json();
 
     return {
       id: product.id,
       name: product.name,
       price: product.price,
-      images: product.images?.map((img: { url: string }) => img.url) ?? [],
+      images: product.images ?? [],
     };
   } catch (error) {
     console.error("Error fetching product:", error);
