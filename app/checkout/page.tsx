@@ -8,6 +8,8 @@ import CartItem from "@/app/cart/Drawer/CartItem";
 import { CartSummary } from "@/app/cart/CartSummary";
 import { useState } from "react";
 
+type Provider = "stripe" | "vipps";
+
 export default function CheckoutPage() {
   const { items } = useCart();
 
@@ -19,30 +21,46 @@ export default function CheckoutPage() {
     city: "",
   });
 
+  const [provider, setProvider] = useState<Provider>("vipps");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = (field: string, value: string) => {
     setCustomer((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = async () => {
-    if (!customer.name || !customer.email) return alert("Fyll ut navn og e‑post.");
+    if (!customer.name || !customer.email) {
+      setError("Fyll ut navn og e-post.");
+      return;
+    }
 
+    setError("");
     setLoading(true);
 
     try {
       const res = await fetch("/api/checkout", {
         method: "POST",
-        body: JSON.stringify({ items }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: items.map((item) => ({
+            productId: item.productId,
+            quantity: item.quantity,
+          })),
+          provider,
+        }),
       });
 
       const data = await res.json();
 
-      if (data.url) window.location.href = data.url;
-      else throw new Error();
-    } catch {
+      if (res.ok && data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error(data.error || "Kunne ikke starte betaling.");
+      }
+    } catch (err: any) {
       setLoading(false);
-      alert("Kunne ikke starte betaling.");
+      setError(err.message || "Kunne ikke starte betaling.");
     }
   };
 
@@ -61,7 +79,7 @@ export default function CheckoutPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
         <div className="lg:col-span-2 space-y-6">
-          {/* form fields */}
+          {/* Kundeinfo */}
           <div>
             <label className="block mb-2 font-medium">Navn</label>
             <input
@@ -73,7 +91,79 @@ export default function CheckoutPage() {
             />
           </div>
 
-          {/* ... resten av feltene ... */}
+          <div>
+            <label className="block mb-2 font-medium">E-post</label>
+            <input
+              type="email"
+              value={customer.email}
+              onChange={(e) => handleChange("email", e.target.value)}
+              className="border rounded w-full px-3 py-2"
+              placeholder="din@epost.no"
+            />
+          </div>
+
+          <div>
+            <label className="block mb-2 font-medium">Adresse</label>
+            <input
+              type="text"
+              value={customer.address}
+              onChange={(e) => handleChange("address", e.target.value)}
+              className="border rounded w-full px-3 py-2"
+              placeholder="Gate og husnummer"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block mb-2 font-medium">Postnummer</label>
+              <input
+                type="text"
+                value={customer.zip}
+                onChange={(e) => handleChange("zip", e.target.value)}
+                className="border rounded w-full px-3 py-2"
+                placeholder="0000"
+              />
+            </div>
+            <div>
+              <label className="block mb-2 font-medium">By</label>
+              <input
+                type="text"
+                value={customer.city}
+                onChange={(e) => handleChange("city", e.target.value)}
+                className="border rounded w-full px-3 py-2"
+                placeholder="Oslo"
+              />
+            </div>
+          </div>
+
+          {/* Betalingsvalg */}
+          <div className="pt-6 border-t">
+            <h2 className="text-xl font-semibold mb-4">Betaling</h2>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => setProvider("vipps")}
+                className={`flex-1 border rounded-lg py-3 font-medium ${
+                  provider === "vipps"
+                    ? "border-black bg-black text-white"
+                    : "border-gray-300 text-gray-700"
+                }`}
+              >
+                Vipps
+              </button>
+              <button
+                type="button"
+                onClick={() => setProvider("stripe")}
+                className={`flex-1 border rounded-lg py-3 font-medium ${
+                  provider === "stripe"
+                    ? "border-black bg-black text-white"
+                    : "border-gray-300 text-gray-700"
+                }`}
+              >
+                Kort (Stripe)
+              </button>
+            </div>
+          </div>
 
           <div className="pt-6 border-t">
             <h2 className="text-xl font-semibold mb-4">Dine produkter</h2>
@@ -91,6 +181,12 @@ export default function CheckoutPage() {
               ))}
             </div>
           </div>
+
+          {error && (
+            <div className="p-3 bg-red-100 text-red-700 rounded-md text-sm">
+              {error}
+            </div>
+          )}
 
           <button
             onClick={handleSubmit}
