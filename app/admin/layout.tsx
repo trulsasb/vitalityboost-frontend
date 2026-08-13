@@ -33,7 +33,7 @@ export default function AdminLayout({
 
   return (
     <div className="min-h-screen flex bg-gray-50">
-      <aside className="w-64 bg-white border-r border-gray-200 p-6 flex flex-col">
+      <aside className="w-64 bg-white border-r border-gray-200 p-6 flex flex-col sticky top-0 h-screen overflow-y-auto">
         <h1 className="text-xl font-semibold mb-8">Admin Panel</h1>
 
         <nav className="flex flex-col gap-2">
