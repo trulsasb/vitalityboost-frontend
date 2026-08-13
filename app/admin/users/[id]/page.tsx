@@ -9,6 +9,7 @@ const PERMISSION_FIELDS = [
   { key: "can_view_orders" as const, label: "Se ordre" },
   { key: "can_view_payments" as const, label: "Se betalinger" },
   { key: "can_manage_accounting" as const, label: "Regnskap" },
+  { key: "can_edit_content" as const, label: "Redigere hjemmesideinnhold" },
 ];
 
 type Permissions = {
@@ -17,6 +18,7 @@ type Permissions = {
   can_view_orders: boolean;
   can_view_payments: boolean;
   can_manage_accounting: boolean;
+  can_edit_content: boolean;
 };
 
 export default function UserDetailPage({ params }: { params: { id: string } }) {
@@ -37,6 +39,7 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
     can_view_orders: false,
     can_view_payments: false,
     can_manage_accounting: false,
+    can_edit_content: false,
   });
 
   async function loadUser() {
@@ -53,6 +56,7 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
         can_view_orders: Boolean(data.can_view_orders),
         can_view_payments: Boolean(data.can_view_payments),
         can_manage_accounting: Boolean(data.can_manage_accounting),
+        can_edit_content: Boolean(data.can_edit_content),
       });
     } catch (err: any) {
       setError(err.message || "Ukjent feil");

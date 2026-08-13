@@ -15,6 +15,7 @@ const navItems = [
   { name: "Orders", href: "/admin/orders" },
   { name: "Billing", href: "/admin/billing" },
   { name: "Users", href: "/admin/users" },
+  { name: "Content", href: "/admin/content" },
 ];
 
 export default function AdminLayout({

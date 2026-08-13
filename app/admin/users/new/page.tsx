@@ -15,6 +15,7 @@ export default function NewUserPage() {
     can_view_orders: false,
     can_view_payments: false,
     can_manage_accounting: false,
+    can_edit_content: false,
   });
 
   const [saving, setSaving] = useState(false);
@@ -106,6 +107,7 @@ export default function NewUserPage() {
                 { key: "can_view_orders" as const, label: "Se ordre" },
                 { key: "can_view_payments" as const, label: "Se betalinger" },
                 { key: "can_manage_accounting" as const, label: "Regnskap" },
+                { key: "can_edit_content" as const, label: "Redigere hjemmesideinnhold" },
               ].map(({ key, label }) => (
                 <div key={key} className="flex items-center gap-2">
                   <input
