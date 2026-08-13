@@ -1,8 +1,5 @@
 "use client";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
-
 import { useCart } from "@/app/cart/CartProvider";
 import CartItem from "@/app/cart/Drawer/CartItem";
 import { CartSummary } from "@/app/cart/CartSummary";

@@ -1,8 +1,8 @@
-import PageShell from "@/components/layout/PageShell";
 import PageSection from "@/components/layout/PageSection";
 import PageContainer from "@/components/layout/PageContainer";
 import { getProductById } from "@/lib/products";
 import { notFound } from "next/navigation";
+import { ProductAddToCartButton } from "@/components/products/ProductAddToCartButton";
 
 interface ProductPageProps {
   params: {
@@ -18,9 +18,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
   }
 
   return (
-    <PageShell>
-      <PageSection>
-        <PageContainer>
+    <PageSection>
+      <PageContainer>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             <div className="space-y-4">
               {product.images && product.images.length > 0 ? (
@@ -46,13 +45,16 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 {product.price} kr
               </p>
 
-              <button className="px-6 py-3 bg-blue-600 text-white rounded-lg text-lg">
-                Legg i handlekurv
-              </button>
+              <ProductAddToCartButton
+                productId={String(product.id)}
+                title={product.name}
+                price={product.price}
+                image={product.images?.[0]}
+                className="px-6 py-3 text-lg"
+              />
             </div>
           </div>
-        </PageContainer>
-      </PageSection>
-    </PageShell>
+      </PageContainer>
+    </PageSection>
   );
 }

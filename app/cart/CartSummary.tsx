@@ -5,10 +5,7 @@ import { useCart } from "@/app/cart/CartProvider";
 export function CartSummary() {
   const { items } = useCart();
 
-  const total = items.reduce(
-    (sum, item) => sum + item.quantity * 299, // midlertidig fast pris
-    0
-  );
+  const total = items.reduce((sum, item) => sum + item.quantity * item.price, 0);
 
   return (
     <div className="border rounded-lg p-6 bg-gray-50">

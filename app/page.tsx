@@ -13,14 +13,12 @@ import {
   Pricing,
 } from "@/components/sections";
 
-import PageShell from "@/components/layout/PageShell";
 import PageSection from "@/components/layout/PageSection";
-import PageContainer from "@/components/layout/PageContainer";
 import Image from "next/image";
 
 export default function HomePage() {
   return (
-    <PageShell>
+    <>
       <PageSection>
         <Hero
           title="Naturlig energi. Klarere fokus. Bedre hverdag."
@@ -152,6 +150,6 @@ export default function HomePage() {
           subheading="Få eksklusive tilbud og nyheter rett i innboksen."
         />
       </PageSection>
-    </PageShell>
+    </>
   );
 }

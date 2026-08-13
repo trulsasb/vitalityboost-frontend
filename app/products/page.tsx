@@ -1,8 +1,8 @@
-import PageShell from "@/components/layout/PageShell";
 import PageSection from "@/components/layout/PageSection";
 import PageContainer from "@/components/layout/PageContainer";
 import Filters from "./Filters";
 import { getProducts } from "@/lib/products";
+import { ProductAddToCartButton } from "@/components/products/ProductAddToCartButton";
 
 interface ProductsPageProps {
   searchParams: { sort?: string; tag?: string };
@@ -23,9 +23,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   }
 
   return (
-    <PageShell>
-      <PageSection>
-        <PageContainer>
+    <PageSection>
+      <PageContainer>
           <div className="mb-8">
             <Filters sort={sort} tag={tag} />
           </div>
@@ -53,15 +52,18 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
                   <p className="text-lg font-bold mt-4">{product.price} kr</p>
 
-                  <button className="mt-4 w-full py-2 bg-blue-600 text-white rounded-md">
-                    Legg i handlekurv
-                  </button>
+                  <ProductAddToCartButton
+                    productId={String(product.id)}
+                    title={product.name}
+                    price={product.price}
+                    image={product.images?.[0]}
+                    className="mt-4 w-full !bg-blue-600 hover:!bg-blue-700"
+                  />
                 </div>
               ))}
             </div>
           )}
-        </PageContainer>
-      </PageSection>
-    </PageShell>
+      </PageContainer>
+    </PageSection>
   );
 }

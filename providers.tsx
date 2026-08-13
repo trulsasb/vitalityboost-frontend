@@ -2,6 +2,7 @@
 "use client";
 
 import React from "react";
+import { CartProvider } from "@/app/cart/CartProvider";
 
 type ProvidersProps = {
   children: React.ReactNode;
@@ -14,5 +15,5 @@ type ProvidersProps = {
  * modifying the layout structure.
  */
 export function Providers({ children }: ProvidersProps) {
-  return <>{children}</>;
+  return <CartProvider>{children}</CartProvider>;
 }

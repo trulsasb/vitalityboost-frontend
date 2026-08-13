@@ -7,32 +7,23 @@ import { ReactNode } from "react";
 import { Providers } from "../providers";
 
 import Header from "@/components/layout/Header";
-import Navigation from "@/components/layout/Navigation";
 import Footer from "@/components/layout/Footer";
-import PageShell from "@/components/layout/PageShell";
-import PageContainer from "@/components/layout/PageContainer";
 
 export const metadata: Metadata = {
   title: "Vitalityboost Nettbutikk",
   description: "Nettbutikk for longevity-kosttilskudd fra Vitalityboost"
 };
 
+// The single source of truth for site chrome — individual pages should
+// render their own content only (PageSection/PageContainer as needed for
+// layout), not another Header/Footer/PageShell, or it duplicates here.
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="no" suppressHydrationWarning>
       <body className="min-h-screen bg-white text-gray-900 flex flex-col">
         <Providers>
           <Header />
-          <Navigation />
-
-          <div className="flex flex-1">
-            <main className="flex-1">
-              <PageShell>
-                <PageContainer>{children}</PageContainer>
-              </PageShell>
-            </main>
-          </div>
-
+          <main className="flex-1">{children}</main>
           <Footer />
         </Providers>
       </body>
