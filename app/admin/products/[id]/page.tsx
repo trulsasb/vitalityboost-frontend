@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { CategorySelect } from "@/components/admin/CategorySelect";
 
 export default function EditProductPage({ params }: { params: { id: string } }) {
   const router = useRouter();
@@ -9,6 +10,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
 
@@ -110,6 +112,27 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
     }
   }
 
+  async function deleteProduct() {
+    if (!confirm("Er du sikker på at du vil slette dette produktet? Dette kan ikke angres.")) return;
+
+    setDeleting(true);
+    setError("");
+
+    try {
+      const res = await fetch(`/api/admin/proxy/products/${id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.detail || "Kunne ikke slette produkt");
+      }
+
+      router.push("/admin/products");
+      router.refresh();
+    } catch (err: any) {
+      setError(err.message || "Ukjent feil");
+      setDeleting(false);
+    }
+  }
+
   useEffect(() => {
     loadProduct();
   }, []);
@@ -181,12 +204,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
 
         <div>
           <label className="block mb-1 font-medium">Kategori</label>
-          <input
-            type="text"
-            value={form.category}
-            onChange={(e) => updateField("category", e.target.value)}
-            className="border border-gray-300 rounded-md px-3 py-2 w-full"
-          />
+          <CategorySelect value={form.category} onChange={(v) => updateField("category", v)} />
         </div>
 
         <div className="flex items-center gap-2">
@@ -223,13 +241,22 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
           )}
         </div>
 
-        <div className="pt-4">
+        <div className="pt-4 flex items-center justify-between">
           <button
             type="submit"
             disabled={saving}
             className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition disabled:opacity-50"
           >
             {saving ? "Lagrer..." : "Lagre endringer"}
+          </button>
+
+          <button
+            type="button"
+            onClick={deleteProduct}
+            disabled={deleting}
+            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition disabled:opacity-50"
+          >
+            {deleting ? "Sletter..." : "Slett produkt"}
           </button>
         </div>
       </form>

@@ -27,8 +27,11 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [isOwner, setIsOwner] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
 
   const [email, setEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -65,8 +68,41 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
     }
   }
 
+  async function loadCurrentUser() {
+    try {
+      const res = await fetch("/api/admin/me", { method: "GET" });
+      if (!res.ok) return;
+      const data = await res.json();
+      setIsOwner(Boolean(data.is_owner));
+      setCurrentUserId(data.id);
+    } catch {
+      // If this fails, the delete button just stays hidden — fine, not critical.
+    }
+  }
+
   function togglePermission(key: keyof Permissions) {
     setPermissions((prev) => ({ ...prev, [key]: !prev[key] }));
+  }
+
+  async function deleteUser() {
+    if (!confirm("Er du sikker på at du vil slette denne brukeren? Dette kan ikke angres.")) return;
+
+    setDeleting(true);
+    setError("");
+
+    try {
+      const res = await fetch(`/api/admin/proxy/users/${id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.detail || "Kunne ikke slette bruker");
+      }
+
+      router.push("/admin/users");
+      router.refresh();
+    } catch (err: any) {
+      setError(err.message || "Ukjent feil");
+      setDeleting(false);
+    }
   }
 
   async function save(e: React.FormEvent) {
@@ -107,6 +143,7 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     loadUser();
+    loadCurrentUser();
   }, []);
 
   if (loading) {
@@ -184,13 +221,26 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
           )}
         </div>
 
-        <button
-          type="submit"
-          disabled={saving}
-          className="bg-black text-white px-4 py-2 rounded-md disabled:opacity-50"
-        >
-          {saving ? "Lagrer..." : "Lagre endringer"}
-        </button>
+        <div className="flex items-center justify-between">
+          <button
+            type="submit"
+            disabled={saving}
+            className="bg-black text-white px-4 py-2 rounded-md disabled:opacity-50"
+          >
+            {saving ? "Lagrer..." : "Lagre endringer"}
+          </button>
+
+          {isOwner && currentUserId !== Number(id) && (
+            <button
+              type="button"
+              onClick={deleteUser}
+              disabled={deleting}
+              className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 disabled:opacity-50"
+            >
+              {deleting ? "Sletter..." : "Slett bruker"}
+            </button>
+          )}
+        </div>
       </form>
     </div>
   );

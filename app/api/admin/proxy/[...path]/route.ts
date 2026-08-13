@@ -46,3 +46,7 @@ export async function POST(req: NextRequest, { params }: { params: { path: strin
 export async function PUT(req: NextRequest, { params }: { params: { path: string[] } }) {
   return proxy(req, params.path);
 }
+
+export async function DELETE(req: NextRequest, { params }: { params: { path: string[] } }) {
+  return proxy(req, params.path);
+}

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { CategorySelect } from "@/components/admin/CategorySelect";
 
 export default function NewProductPage() {
   const router = useRouter();
@@ -147,12 +148,7 @@ export default function NewProductPage() {
 
         <div>
           <label className="block mb-1 font-medium">Kategori</label>
-          <input
-            type="text"
-            value={form.category}
-            onChange={(e) => updateField("category", e.target.value)}
-            className="border border-gray-300 rounded-md px-3 py-2 w-full"
-          />
+          <CategorySelect value={form.category} onChange={(v) => updateField("category", v)} />
         </div>
 
         <div className="flex items-center gap-2">
