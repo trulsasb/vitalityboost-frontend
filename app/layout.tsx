@@ -8,7 +8,6 @@ import { Providers } from "../providers";
 
 import Header from "@/components/layout/Header";
 import Navigation from "@/components/layout/Navigation";
-import Sidebar from "@/components/layout/Sidebar";
 import Footer from "@/components/layout/Footer";
 import PageShell from "@/components/layout/PageShell";
 import PageContainer from "@/components/layout/PageContainer";
@@ -32,10 +31,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 <PageContainer>{children}</PageContainer>
               </PageShell>
             </main>
-
-            <aside className="w-80 border-l border-gray-200 bg-gray-50 sticky top-0 h-screen overflow-y-auto">
-              <Sidebar />
-            </aside>
           </div>
 
           <Footer />

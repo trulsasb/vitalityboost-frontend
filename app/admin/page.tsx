@@ -20,8 +20,8 @@ export default async function AdminHomePage() {
 
   try {
     [orders, products] = await Promise.all([
-      adminGet<BackendOrder[]>("/orders/", "Kunne ikke hente ordre"),
-      adminGet<BackendProduct[]>("/products/", "Kunne ikke hente produkter"),
+      adminGet<BackendOrder[]>("/admin/orders/", "Kunne ikke hente ordre"),
+      adminGet<BackendProduct[]>("/admin/products/", "Kunne ikke hente produkter"),
     ]);
   } catch (e: any) {
     error = e.message || "Ukjent feil";

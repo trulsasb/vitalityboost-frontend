@@ -15,7 +15,7 @@ export default async function BillingPage() {
   let error = "";
 
   try {
-    payments = await adminGet<BackendPayment[]>("/payments/", "Kunne ikke hente betalinger");
+    payments = await adminGet<BackendPayment[]>("/admin/payments/", "Kunne ikke hente betalinger");
   } catch (e: any) {
     error = e.message || "Ukjent feil";
   }

@@ -29,7 +29,7 @@ export default async function UsersPage() {
   let error = "";
 
   try {
-    users = await adminGet<BackendUser[]>("/users/", "Kunne ikke hente brukere");
+    users = await adminGet<BackendUser[]>("/admin/users/", "Kunne ikke hente brukere");
   } catch (e: any) {
     error = e.message || "Ukjent feil";
   }

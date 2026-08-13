@@ -15,7 +15,7 @@ export default async function OrdersPage() {
   let error = "";
 
   try {
-    orders = await adminGet<BackendOrder[]>("/orders/", "Kunne ikke hente ordre");
+    orders = await adminGet<BackendOrder[]>("/admin/orders/", "Kunne ikke hente ordre");
   } catch (e: any) {
     error = e.message || "Ukjent feil";
   }

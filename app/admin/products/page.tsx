@@ -15,7 +15,7 @@ export default async function ProductsPage() {
   let error = "";
 
   try {
-    products = await adminGet<BackendProduct[]>("/products/", "Kunne ikke hente produkter");
+    products = await adminGet<BackendProduct[]>("/admin/products/", "Kunne ikke hente produkter");
   } catch (e: any) {
     error = e.message || "Ukjent feil";
   }
