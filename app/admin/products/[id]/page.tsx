@@ -16,9 +16,10 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
     name: "",
     description: "",
     price: "",
+    stock: "",
     category: "",
     active: true,
-    images: [] as string[],
+    image: "" as string,
   });
 
   function updateField(key: string, value: any) {
@@ -27,7 +28,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
 
   async function loadProduct() {
     try {
-      const res = await fetch(`/api/products/${id}`, { method: "GET" });
+      const res = await fetch(`/api/admin/proxy/products/${id}`, { method: "GET" });
       if (!res.ok) throw new Error("Kunne ikke hente produkt");
 
       const data = await res.json();
@@ -35,10 +36,11 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
       setForm({
         name: data.name || "",
         description: data.description || "",
-        price: String(data.price || ""),
+        price: String(data.price ?? ""),
+        stock: String(data.stock ?? ""),
         category: data.category || "",
         active: Boolean(data.active),
-        images: data.images || [],
+        image: data.image || "",
       });
     } catch (err: any) {
       setError(err.message || "Ukjent feil");
@@ -47,7 +49,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
     }
   }
 
-  async function uploadImages(e: React.ChangeEvent<HTMLInputElement>) {
+  async function uploadImage(e: React.ChangeEvent<HTMLInputElement>) {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
@@ -55,9 +57,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
     setError("");
 
     const formData = new FormData();
-    for (const file of files) {
-      formData.append("files", file);
-    }
+    formData.append("files", files[0]);
 
     try {
       const res = await fetch("/api/upload", {
@@ -71,19 +71,12 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
         return;
       }
 
-      updateField("images", [...form.images, ...data.urls]);
+      updateField("image", data.urls?.[0] || "");
     } catch {
       setError("Ukjent feil ved opplasting");
     } finally {
       setUploading(false);
     }
-  }
-
-  function removeImage(url: string) {
-    updateField(
-      "images",
-      form.images.filter((img) => img !== url)
-    );
   }
 
   async function save(e: React.FormEvent) {
@@ -92,16 +85,17 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
     setError("");
 
     try {
-      const res = await fetch(`/api/products/${id}`, {
+      const res = await fetch(`/api/admin/proxy/products/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: form.name,
           description: form.description,
           price: Number(form.price),
+          stock: Number(form.stock),
           category: form.category || null,
           active: form.active,
-          images: form.images,
+          image: form.image || null,
         }),
       });
 
@@ -113,20 +107,6 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
       setError(err.message || "Ukjent feil");
     } finally {
       setSaving(false);
-    }
-  }
-
-  async function deleteProduct() {
-    if (!confirm("Sikker på at du vil slette produktet?")) return;
-
-    try {
-      const res = await fetch(`/api/products/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Kunne ikke slette produkt");
-
-      router.push("/admin/products");
-      router.refresh();
-    } catch (err: any) {
-      setError(err.message || "Ukjent feil");
     }
   }
 
@@ -171,17 +151,32 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
           />
         </div>
 
-        <div>
-          <label className="block mb-1 font-medium">Pris (inkl. MVA)</label>
-          <input
-            type="number"
-            required
-            min="0"
-            step="1"
-            value={form.price}
-            onChange={(e) => updateField("price", e.target.value)}
-            className="border border-gray-300 rounded-md px-3 py-2 w-full"
-          />
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block mb-1 font-medium">Pris (inkl. MVA)</label>
+            <input
+              type="number"
+              required
+              min="0"
+              step="1"
+              value={form.price}
+              onChange={(e) => updateField("price", e.target.value)}
+              className="border border-gray-300 rounded-md px-3 py-2 w-full"
+            />
+          </div>
+
+          <div>
+            <label className="block mb-1 font-medium">Lagerbeholdning</label>
+            <input
+              type="number"
+              required
+              min="0"
+              step="1"
+              value={form.stock}
+              onChange={(e) => updateField("stock", e.target.value)}
+              className="border border-gray-300 rounded-md px-3 py-2 w-full"
+            />
+          </div>
         </div>
 
         <div>
@@ -200,60 +195,41 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
             checked={form.active}
             onChange={(e) => updateField("active", e.target.checked)}
           />
-          <label className="font-medium">Aktiv</label>
+          <label className="font-medium">Aktiv (synlig i butikken)</label>
         </div>
 
         <div>
-          <label className="block mb-1 font-medium">Bilder</label>
+          <label className="block mb-1 font-medium">Bilde</label>
 
-          <input
-            type="file"
-            multiple
-            onChange={uploadImages}
-            className="mt-1"
-          />
+          <input type="file" accept="image/*" onChange={uploadImage} className="mt-1" />
 
-          {uploading && (
-            <p className="text-sm text-gray-500 mt-2">Laster opp...</p>
-          )}
+          {uploading && <p className="text-sm text-gray-500 mt-2">Laster opp...</p>}
 
-          {form.images.length > 0 && (
-            <div className="grid grid-cols-3 gap-4 mt-4">
-              {form.images.map((url) => (
-                <div key={url} className="relative">
-                  <img
-                    src={url}
-                    alt="Produktbilde"
-                    className="w-full h-24 object-cover rounded-md border"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removeImage(url)}
-                    className="absolute top-1 right-1 bg-red-600 text-white text-xs px-2 py-1 rounded"
-                  >
-                    X
-                  </button>
-                </div>
-              ))}
+          {form.image && (
+            <div className="relative w-32 mt-4">
+              <img
+                src={form.image}
+                alt="Produktbilde"
+                className="w-full h-24 object-cover rounded-md border"
+              />
+              <button
+                type="button"
+                onClick={() => updateField("image", "")}
+                className="absolute top-1 right-1 bg-red-600 text-white text-xs px-2 py-1 rounded"
+              >
+                X
+              </button>
             </div>
           )}
         </div>
 
-        <div className="flex items-center justify-between pt-4">
+        <div className="pt-4">
           <button
             type="submit"
             disabled={saving}
             className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition disabled:opacity-50"
           >
             {saving ? "Lagrer..." : "Lagre endringer"}
-          </button>
-
-          <button
-            type="button"
-            onClick={deleteProduct}
-            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
-          >
-            Slett produkt
           </button>
         </div>
       </form>

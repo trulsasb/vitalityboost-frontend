@@ -1,21 +1,48 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+
+const STATUS_OPTIONS = [
+  "pending_payment",
+  "paid",
+  "shipped",
+  "completed",
+  "cancelled",
+  "refunded",
+  "failed",
+];
+
+interface OrderItem {
+  id: number;
+  product_id: number;
+  quantity: number;
+  price_at_purchase: number;
+}
+
+interface Order {
+  id: number;
+  total_amount: number;
+  status: string;
+  created_at: string | null;
+  customer_name: string | null;
+  customer_email: string | null;
+  shipping_address: string | null;
+  shipping_zip: string | null;
+  shipping_city: string | null;
+  items: OrderItem[];
+}
 
 export default function OrderDetailPage({ params }: { params: { id: string } }) {
-  const router = useRouter();
   const { id } = params;
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-
-  const [order, setOrder] = useState<any>(null);
+  const [order, setOrder] = useState<Order | null>(null);
 
   async function loadOrder() {
     try {
-      const res = await fetch(`/api/orders/${id}`, { method: "GET" });
+      const res = await fetch(`/api/admin/proxy/orders/${id}`, { method: "GET" });
       if (!res.ok) throw new Error("Kunne ikke hente ordre");
       const data = await res.json();
       setOrder(data);
@@ -26,19 +53,18 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
     }
   }
 
-  async function refund() {
-    if (!confirm("Er du sikker på at du vil refundere denne ordren?")) return;
-
+  async function updateStatus(status: string) {
     setSaving(true);
     setError("");
 
     try {
-      const res = await fetch(`/api/orders/${id}/refund`, {
-        method: "POST",
+      const res = await fetch(`/api/admin/proxy/orders/${id}/status`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
       });
 
-      if (!res.ok) throw new Error("Kunne ikke refundere ordre");
-
+      if (!res.ok) throw new Error("Kunne ikke oppdatere status");
       await loadOrder();
     } catch (err: any) {
       setError(err.message || "Ukjent feil");
@@ -69,39 +95,53 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
 
   return (
     <div className="p-6 space-y-8 max-w-3xl">
-      <h1 className="text-xl font-semibold tracking-tight">
-        Ordre #{order.id}
-      </h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl font-semibold tracking-tight">Ordre #{order.id}</h1>
+
+        <div className="flex items-center gap-2">
+          <label className="text-sm font-medium">Status</label>
+          <select
+            value={order.status}
+            disabled={saving}
+            onChange={(e) => updateStatus(e.target.value)}
+            className="border rounded-md px-3 py-2"
+          >
+            {STATUS_OPTIONS.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
 
       {error && (
         <div className="p-4 bg-red-100 text-red-700 rounded-md">{error}</div>
       )}
 
-      {/* Kundeinfo */}
       <section className="border rounded-md p-4 space-y-2">
         <h2 className="font-semibold text-lg">Kunde</h2>
-        <p><strong>Navn:</strong> {order.customer_name}</p>
-        <p><strong>E‑post:</strong> {order.customer_email}</p>
-        <p><strong>Adresse:</strong> {order.address}</p>
+        <p><strong>Navn:</strong> {order.customer_name || "-"}</p>
+        <p><strong>E-post:</strong> {order.customer_email || "-"}</p>
       </section>
 
-      {/* Produkter */}
+      <section className="border rounded-md p-4 space-y-2">
+        <h2 className="font-semibold text-lg">Leveringsadresse</h2>
+        <p>{order.shipping_address || "-"}</p>
+        <p>{order.shipping_zip} {order.shipping_city}</p>
+      </section>
+
       <section className="border rounded-md p-4 space-y-4">
         <h2 className="font-semibold text-lg">Produkter</h2>
 
         <div className="space-y-2">
-          {order.items.map((item: any) => (
-            <div
-              key={item.id}
-              className="flex justify-between border-b pb-2"
-            >
+          {order.items.map((item) => (
+            <div key={item.id} className="flex justify-between border-b pb-2">
               <div>
-                <p className="font-medium">{item.product_name}</p>
-                <p className="text-sm text-gray-600">
-                  Antall: {item.quantity}
-                </p>
+                <p className="font-medium">Produkt #{item.product_id}</p>
+                <p className="text-sm text-gray-600">Antall: {item.quantity}</p>
               </div>
-              <p>{item.total_price} kr</p>
+              <p>{(item.price_at_purchase * item.quantity).toFixed(2)} kr</p>
             </div>
           ))}
         </div>
@@ -111,51 +151,6 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
           <p className="font-semibold">{order.total_amount} kr</p>
         </div>
       </section>
-
-      {/* Betaling */}
-      <section className="border rounded-md p-4 space-y-2">
-        <h2 className="font-semibold text-lg">Betaling</h2>
-        <p><strong>Metode:</strong> {order.payment_method}</p>
-        <p><strong>Status:</strong> {order.payment_status}</p>
-        <p>
-          <strong>Transaksjon:</strong>{" "}
-          {order.transaction_id || "Ingen"}
-        </p>
-      </section>
-
-      {/* Hendelseslogg */}
-      <section className="border rounded-md p-4 space-y-2">
-        <h2 className="font-semibold text-lg">Hendelseslogg</h2>
-
-        {order.events.length === 0 && (
-          <p className="text-gray-600">Ingen hendelser registrert.</p>
-        )}
-
-        <ul className="space-y-2">
-          {order.events.map((event: any) => (
-            <li
-              key={event.id}
-              className="border-b pb-2"
-            >
-              <p className="font-medium">{event.type}</p>
-              <p className="text-sm text-gray-600">
-                {new Date(event.timestamp).toLocaleString("no-NO")}
-              </p>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      {/* Handlinger */}
-      <div className="flex justify-end">
-        <button
-          onClick={refund}
-          disabled={saving}
-          className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition disabled:opacity-50"
-        >
-          {saving ? "Behandler..." : "Refunder ordre"}
-        </button>
-      </div>
     </div>
   );
 }

@@ -1,24 +1,103 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+
+const PERMISSION_FIELDS = [
+  { key: "can_view_products" as const, label: "Se produkter" },
+  { key: "can_edit_products" as const, label: "Legge til / endre produkter" },
+  { key: "can_view_orders" as const, label: "Se ordre" },
+  { key: "can_view_payments" as const, label: "Se betalinger" },
+  { key: "can_manage_accounting" as const, label: "Regnskap" },
+];
+
+type Permissions = {
+  can_view_products: boolean;
+  can_edit_products: boolean;
+  can_view_orders: boolean;
+  can_view_payments: boolean;
+  can_manage_accounting: boolean;
+};
 
 export default function UserDetailPage({ params }: { params: { id: string } }) {
+  const router = useRouter();
   const { id } = params;
 
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [user, setUser] = useState<any>(null);
+  const [success, setSuccess] = useState("");
+
+  const [email, setEmail] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [permissions, setPermissions] = useState<Permissions>({
+    can_view_products: false,
+    can_edit_products: false,
+    can_view_orders: false,
+    can_view_payments: false,
+    can_manage_accounting: false,
+  });
 
   async function loadUser() {
     try {
-      const res = await fetch(`/api/users/${id}`, { method: "GET" });
+      const res = await fetch(`/api/admin/proxy/users/${id}`, { method: "GET" });
       if (!res.ok) throw new Error("Kunne ikke hente bruker");
       const data = await res.json();
-      setUser(data);
+
+      setEmail(data.email);
+      setIsAdmin(Boolean(data.is_admin));
+      setPermissions({
+        can_view_products: Boolean(data.can_view_products),
+        can_edit_products: Boolean(data.can_edit_products),
+        can_view_orders: Boolean(data.can_view_orders),
+        can_view_payments: Boolean(data.can_view_payments),
+        can_manage_accounting: Boolean(data.can_manage_accounting),
+      });
     } catch (err: any) {
       setError(err.message || "Ukjent feil");
     } finally {
       setLoading(false);
+    }
+  }
+
+  function togglePermission(key: keyof Permissions) {
+    setPermissions((prev) => ({ ...prev, [key]: !prev[key] }));
+  }
+
+  async function save(e: React.FormEvent) {
+    e.preventDefault();
+    setSaving(true);
+    setError("");
+    setSuccess("");
+
+    const body: Record<string, unknown> = {
+      email,
+      is_admin: isAdmin,
+      ...permissions,
+    };
+    if (newPassword) {
+      body.password = newPassword;
+    }
+
+    try {
+      const res = await fetch(`/api/admin/proxy/users/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.detail || "Kunne ikke lagre bruker");
+      }
+
+      setNewPassword("");
+      setSuccess("Lagret.");
+    } catch (err: any) {
+      setError(err.message || "Ukjent feil");
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -34,87 +113,81 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
     );
   }
 
-  if (!user) {
-    return (
-      <div className="p-6">
-        <p>Fant ikke brukeren.</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="p-6 space-y-8 max-w-3xl">
-      <h1 className="text-xl font-semibold tracking-tight">
-        Bruker #{user.id}
-      </h1>
+    <div className="p-6 max-w-xl space-y-6">
+      <h1 className="text-xl font-semibold tracking-tight">Bruker #{id}</h1>
 
       {error && (
         <div className="p-4 bg-red-100 text-red-700 rounded-md">{error}</div>
       )}
+      {success && (
+        <div className="p-4 bg-green-100 text-green-700 rounded-md">{success}</div>
+      )}
 
-      {/* Brukerinfo */}
-      <section className="border rounded-md p-4 space-y-2">
-        <h2 className="font-semibold text-lg">Brukerinformasjon</h2>
-        <p><strong>Navn:</strong> {user.name}</p>
-        <p><strong>E‑post:</strong> {user.email}</p>
-        <p>
-          <strong>Opprettet:</strong>{" "}
-          {new Date(user.created_at).toLocaleDateString("no-NO")}
-        </p>
-      </section>
-
-      {/* Ordre */}
-      <section className="border rounded-md p-4 space-y-4">
-        <h2 className="font-semibold text-lg">Ordre</h2>
-
-        {user.orders.length === 0 && (
-          <p className="text-gray-600">Ingen ordre funnet.</p>
-        )}
-
-        <div className="space-y-2">
-          {user.orders.map((order: any) => (
-            <div
-              key={order.id}
-              className="flex justify-between border-b pb-2"
-            >
-              <div>
-                <p className="font-medium">Ordre #{order.id}</p>
-                <p className="text-sm text-gray-600">
-                  {new Date(order.created_at).toLocaleDateString("no-NO")}
-                </p>
-              </div>
-              <p>{order.total_amount} kr</p>
-            </div>
-          ))}
+      <form onSubmit={save} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium">E-post</label>
+          <input
+            type="email"
+            className="border rounded-md p-2 w-full"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
         </div>
-      </section>
 
-      {/* Abonnementer */}
-      <section className="border rounded-md p-4 space-y-4">
-        <h2 className="font-semibold text-lg">Abonnementer</h2>
-
-        {user.subscriptions.length === 0 && (
-          <p className="text-gray-600">Ingen abonnementer funnet.</p>
-        )}
-
-        <div className="space-y-2">
-          {user.subscriptions.map((sub: any) => (
-            <div
-              key={sub.id}
-              className="flex justify-between border-b pb-2"
-            >
-              <div>
-                <p className="font-medium">{sub.product_name}</p>
-                <p className="text-sm text-gray-600">
-                  Neste fornyelse:{" "}
-                  {new Date(sub.next_renewal).toLocaleDateString("no-NO")}
-                </p>
-              </div>
-              <p>{sub.status}</p>
-            </div>
-          ))}
+        <div>
+          <label className="block text-sm font-medium">Nytt passord (valgfritt)</label>
+          <input
+            type="password"
+            className="border rounded-md p-2 w-full"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            placeholder="La stå tomt for å beholde nåværende passord"
+            minLength={6}
+          />
         </div>
-      </section>
+
+        <div className="border rounded-md p-4 space-y-3">
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="is_admin"
+              checked={isAdmin}
+              onChange={(e) => setIsAdmin(e.target.checked)}
+            />
+            <label htmlFor="is_admin" className="font-medium">
+              Administrator (full tilgang til alt, inkludert brukerstyring)
+            </label>
+          </div>
+
+          {!isAdmin && (
+            <div className="pl-6 space-y-2 pt-2 border-t">
+              <p className="text-sm text-gray-600 mb-2">Eller gi spesifikke tilganger:</p>
+
+              {PERMISSION_FIELDS.map(({ key, label }) => (
+                <div key={key} className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id={key}
+                    checked={permissions[key]}
+                    onChange={() => togglePermission(key)}
+                  />
+                  <label htmlFor={key}>{label}</label>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <button
+          type="submit"
+          disabled={saving}
+          className="bg-black text-white px-4 py-2 rounded-md disabled:opacity-50"
+        >
+          {saving ? "Lagrer..." : "Lagre endringer"}
+        </button>
+      </form>
     </div>
   );
 }

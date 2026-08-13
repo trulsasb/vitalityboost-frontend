@@ -30,8 +30,8 @@ export default function CheckoutPage() {
   };
 
   const handleSubmit = async () => {
-    if (!customer.name || !customer.email) {
-      setError("Fyll ut navn og e-post.");
+    if (!customer.name || !customer.email || !customer.address || !customer.zip || !customer.city) {
+      setError("Fyll ut navn, e-post, adresse, postnummer og by.");
       return;
     }
 
@@ -48,6 +48,7 @@ export default function CheckoutPage() {
             quantity: item.quantity,
           })),
           provider,
+          customer,
         }),
       });
 

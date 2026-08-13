@@ -1,42 +1,53 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function NewUserPage() {
-  const [name, setName] = useState("");
+  const router = useRouter();
+
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("user");
   const [password, setPassword] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [permissions, setPermissions] = useState({
+    can_view_products: false,
+    can_edit_products: false,
+    can_view_orders: false,
+    can_view_payments: false,
+    can_manage_accounting: false,
+  });
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+
+  function togglePermission(key: keyof typeof permissions) {
+    setPermissions((prev) => ({ ...prev, [key]: !prev[key] }));
+  }
 
   async function createUser(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
     setError("");
-    setSuccess("");
 
     try {
-      const res = await fetch("/api/users", {
+      const res = await fetch("/api/admin/proxy/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name,
           email,
-          role,
           password,
+          is_admin: isAdmin,
+          ...permissions,
         }),
       });
 
-      if (!res.ok) throw new Error("Kunne ikke opprette bruker");
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.detail || "Kunne ikke opprette bruker");
+      }
 
-      setSuccess("Bruker opprettet!");
-      setName("");
-      setEmail("");
-      setRole("user");
-      setPassword("");
+      router.push("/admin/users");
+      router.refresh();
     } catch (err: any) {
       setError(err.message || "Ukjent feil");
     } finally {
@@ -50,18 +61,7 @@ export default function NewUserPage() {
 
       <form onSubmit={createUser} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium">Navn</label>
-          <input
-            type="text"
-            className="border rounded-md p-2 w-full"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium">E‑post</label>
+          <label className="block text-sm font-medium">E-post</label>
           <input
             type="email"
             className="border rounded-md p-2 w-full"
@@ -69,18 +69,6 @@ export default function NewUserPage() {
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium">Rolle</label>
-          <select
-            className="border rounded-md p-2 w-full"
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-          >
-            <option value="user">Bruker</option>
-            <option value="admin">Administrator</option>
-          </select>
         </div>
 
         <div>
@@ -95,14 +83,46 @@ export default function NewUserPage() {
           />
         </div>
 
+        <div className="border rounded-md p-4 space-y-3">
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="is_admin"
+              checked={isAdmin}
+              onChange={(e) => setIsAdmin(e.target.checked)}
+            />
+            <label htmlFor="is_admin" className="font-medium">
+              Administrator (full tilgang til alt, inkludert brukerstyring)
+            </label>
+          </div>
+
+          {!isAdmin && (
+            <div className="pl-6 space-y-2 pt-2 border-t">
+              <p className="text-sm text-gray-600 mb-2">Eller gi spesifikke tilganger:</p>
+
+              {[
+                { key: "can_view_products" as const, label: "Se produkter" },
+                { key: "can_edit_products" as const, label: "Legge til / endre produkter" },
+                { key: "can_view_orders" as const, label: "Se ordre" },
+                { key: "can_view_payments" as const, label: "Se betalinger" },
+                { key: "can_manage_accounting" as const, label: "Regnskap" },
+              ].map(({ key, label }) => (
+                <div key={key} className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id={key}
+                    checked={permissions[key]}
+                    onChange={() => togglePermission(key)}
+                  />
+                  <label htmlFor={key}>{label}</label>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
         {error && (
           <div className="p-3 bg-red-100 text-red-700 rounded-md">{error}</div>
-        )}
-
-        {success && (
-          <div className="p-3 bg-green-100 text-green-700 rounded-md">
-            {success}
-          </div>
         )}
 
         <button

@@ -4,15 +4,30 @@ import PageContainer from "@/components/layout/PageContainer";
 import Filters from "./Filters";
 import { getProducts } from "@/lib/products";
 
-export default async function ProductsPage() {
-  const products = await getProducts();
+interface ProductsPageProps {
+  searchParams: { sort?: string; tag?: string };
+}
+
+export default async function ProductsPage({ searchParams }: ProductsPageProps) {
+  const sort = searchParams.sort ?? "popular";
+  const tag = searchParams.tag ?? "";
+
+  let products = await getProducts();
+
+  if (sort === "price-asc") {
+    products = [...products].sort((a, b) => a.price - b.price);
+  } else if (sort === "price-desc") {
+    products = [...products].sort((a, b) => b.price - a.price);
+  } else if (sort === "newest") {
+    products = [...products].sort((a, b) => b.id - a.id);
+  }
 
   return (
     <PageShell>
       <PageSection>
         <PageContainer>
           <div className="mb-8">
-            <Filters />
+            <Filters sort={sort} tag={tag} />
           </div>
 
           {products.length === 0 ? (

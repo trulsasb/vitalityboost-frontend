@@ -7,6 +7,14 @@ interface CheckoutItem {
   quantity: number;
 }
 
+interface CheckoutCustomer {
+  name: string;
+  email: string;
+  address: string;
+  zip: string;
+  city: string;
+}
+
 // Creates the order and initiates payment through the backend, which is the
 // only place that holds the Stripe/Vipps secret keys and looks up real
 // product prices server-side (the old version trusted item.price from the
@@ -14,9 +22,10 @@ interface CheckoutItem {
 // stable same-origin endpoint to call.
 export async function POST(req: Request) {
   try {
-    const { items, provider } = (await req.json()) as {
+    const { items, provider, customer } = (await req.json()) as {
       items: CheckoutItem[];
       provider: "stripe" | "vipps";
+      customer: CheckoutCustomer;
     };
 
     if (!items || items.length === 0) {
@@ -24,6 +33,9 @@ export async function POST(req: Request) {
     }
     if (provider !== "stripe" && provider !== "vipps") {
       return NextResponse.json({ error: "Ugyldig betalingsmetode" }, { status: 400 });
+    }
+    if (!customer?.name || !customer?.email || !customer?.address || !customer?.zip || !customer?.city) {
+      return NextResponse.json({ error: "Mangler kunde- eller leveringsinformasjon" }, { status: 400 });
     }
 
     const orderRes = await fetch(`${API_BASE}/orders/direct`, {
@@ -34,6 +46,11 @@ export async function POST(req: Request) {
           product_id: Number(item.productId),
           quantity: item.quantity,
         })),
+        customer_name: customer.name,
+        customer_email: customer.email,
+        shipping_address: customer.address,
+        shipping_zip: customer.zip,
+        shipping_city: customer.city,
       }),
     });
 

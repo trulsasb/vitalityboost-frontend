@@ -4,17 +4,17 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import clsx from "clsx";
 
+// Only sections with a real, working backend behind them. The rest
+// (categories, brands, reviews, discounts, subscriptions, settings,
+// analytics, customers, media, support) have no backend support yet —
+// their routes still exist but show a "not available" placeholder rather
+// than being linked here as if they worked.
 const navItems = [
   { name: "Dashboard", href: "/admin" },
   { name: "Products", href: "/admin/products" },
-  { name: "Categories", href: "/admin/categories" },
-  { name: "Brands", href: "/admin/brands" },
   { name: "Orders", href: "/admin/orders" },
+  { name: "Billing", href: "/admin/billing" },
   { name: "Users", href: "/admin/users" },
-  { name: "Reviews", href: "/admin/reviews" },
-  { name: "Discounts", href: "/admin/discounts" },
-  { name: "Subscriptions", href: "/admin/subscriptions" },
-  { name: "Settings", href: "/admin/settings" },
 ];
 
 export default function AdminLayout({

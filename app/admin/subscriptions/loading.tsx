@@ -1,7 +1,0 @@
-export default function AdminSubscriptionsLoading() {
-  return (
-    <div className="flex items-center justify-center py-20">
-      <p className="text-gray-600">Laster abonnementer…</p>
-    </div>
-  );
-}

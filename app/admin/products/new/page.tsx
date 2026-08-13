@@ -10,9 +10,10 @@ export default function NewProductPage() {
     name: "",
     description: "",
     price: "",
+    stock: "",
     category: "",
     active: true,
-    images: [] as string[],
+    image: "" as string,
   });
 
   const [loading, setLoading] = useState(false);
@@ -23,7 +24,7 @@ export default function NewProductPage() {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
-  async function uploadImages(e: React.ChangeEvent<HTMLInputElement>) {
+  async function uploadImage(e: React.ChangeEvent<HTMLInputElement>) {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
@@ -31,9 +32,7 @@ export default function NewProductPage() {
     setError("");
 
     const formData = new FormData();
-    for (const file of files) {
-      formData.append("files", file);
-    }
+    formData.append("files", files[0]);
 
     try {
       const res = await fetch("/api/upload", {
@@ -48,19 +47,12 @@ export default function NewProductPage() {
         return;
       }
 
-      updateField("images", [...form.images, ...data.urls]);
-    } catch (err) {
+      updateField("image", data.urls?.[0] || "");
+    } catch {
       setError("Ukjent feil ved opplasting");
     } finally {
       setUploading(false);
     }
-  }
-
-  function removeImage(url: string) {
-    updateField(
-      "images",
-      form.images.filter((img) => img !== url)
-    );
   }
 
   async function submit(e: React.FormEvent) {
@@ -69,16 +61,17 @@ export default function NewProductPage() {
     setError("");
 
     try {
-      const res = await fetch("/api/products", {
+      const res = await fetch("/api/admin/proxy/products", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: form.name,
           description: form.description,
           price: Number(form.price),
+          stock: Number(form.stock),
           category: form.category || null,
           active: form.active,
-          images: form.images,
+          image: form.image || null,
         }),
       });
 
@@ -124,17 +117,77 @@ export default function NewProductPage() {
           />
         </div>
 
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block mb-1 font-medium">Pris (inkl. MVA)</label>
+            <input
+              type="number"
+              required
+              min="0"
+              step="1"
+              value={form.price}
+              onChange={(e) => updateField("price", e.target.value)}
+              className="border border-gray-300 rounded-md px-3 py-2 w-full"
+            />
+          </div>
+
+          <div>
+            <label className="block mb-1 font-medium">Lagerbeholdning</label>
+            <input
+              type="number"
+              required
+              min="0"
+              step="1"
+              value={form.stock}
+              onChange={(e) => updateField("stock", e.target.value)}
+              className="border border-gray-300 rounded-md px-3 py-2 w-full"
+            />
+          </div>
+        </div>
+
         <div>
-          <label className="block mb-1 font-medium">Pris (inkl. MVA)</label>
+          <label className="block mb-1 font-medium">Kategori</label>
           <input
-            type="number"
-            required
-            min="0"
-            step="1"
-            value={form.price}
-            onChange={(e) => updateField("price", e.target.value)}
+            type="text"
+            value={form.category}
+            onChange={(e) => updateField("category", e.target.value)}
             className="border border-gray-300 rounded-md px-3 py-2 w-full"
           />
+        </div>
+
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={form.active}
+            onChange={(e) => updateField("active", e.target.checked)}
+          />
+          <label className="font-medium">Aktiv (synlig i butikken)</label>
+        </div>
+
+        <div>
+          <label className="block mb-1 font-medium">Bilde</label>
+
+          <input type="file" accept="image/*" onChange={uploadImage} className="mt-1" />
+
+          {uploading && <p className="text-sm text-gray-500 mt-2">Laster opp...</p>}
+
+          {form.image && (
+            <img
+              src={form.image}
+              alt="Produktbilde"
+              className="w-32 h-24 object-cover rounded-md border mt-4"
+            />
+          )}
+        </div>
+
+        <div className="pt-4">
+          <button
+            type="submit"
+            disabled={loading}
+            className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition disabled:opacity-50"
+          >
+            {loading ? "Oppretter..." : "Opprett produkt"}
+          </button>
         </div>
       </form>
     </div>

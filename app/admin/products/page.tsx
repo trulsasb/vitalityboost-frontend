@@ -1,31 +1,21 @@
 import Link from "next/link";
+import { adminGet } from "@/lib/api/adminFetch";
 
-async function getProducts(search: string) {
-  const query = search ? `?search=${encodeURIComponent(search)}` : "";
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/products${query}`, {
-    method: "GET",
-    cache: "no-store",
-  });
-
-  if (!res.ok) {
-    throw new Error("Kunne ikke hente produkter");
-  }
-
-  return res.json();
+interface BackendProduct {
+  id: number;
+  name: string;
+  price: number;
+  category: string | null;
+  active: boolean;
+  created_at: string | null;
 }
 
-export default async function ProductsPage({
-  searchParams,
-}: {
-  searchParams?: { search?: string };
-}) {
-  const search = searchParams?.search || "";
-
-  let products: any[] = [];
+export default async function ProductsPage() {
+  let products: BackendProduct[] = [];
   let error = "";
 
   try {
-    products = await getProducts(search);
+    products = await adminGet<BackendProduct[]>("/products/", "Kunne ikke hente produkter");
   } catch (e: any) {
     error = e.message || "Ukjent feil";
   }
@@ -42,26 +32,8 @@ export default async function ProductsPage({
         </Link>
       </div>
 
-      <form className="flex gap-2">
-        <input
-          type="text"
-          name="search"
-          defaultValue={search}
-          placeholder="Søk etter produkter..."
-          className="border border-gray-300 rounded-md px-3 py-2 w-full"
-        />
-        <button
-          type="submit"
-          className="px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-700 transition"
-        >
-          Søk
-        </button>
-      </form>
-
       {error && (
-        <div className="p-4 bg-red-100 text-red-700 rounded-md">
-          {error}
-        </div>
+        <div className="p-4 bg-red-100 text-red-700 rounded-md">{error}</div>
       )}
 
       <div className="overflow-x-auto border rounded-md">
@@ -79,34 +51,23 @@ export default async function ProductsPage({
           <tbody>
             {products.length === 0 && (
               <tr>
-                <td
-                  colSpan={6}
-                  className="text-center p-6 text-gray-500"
-                >
+                <td colSpan={6} className="text-center p-6 text-gray-500">
                   Ingen produkter funnet
                 </td>
               </tr>
             )}
 
             {products.map((product) => (
-              <tr
-                key={product.id}
-                className="border-b hover:bg-gray-50 transition"
-              >
+              <tr key={product.id} className="border-b hover:bg-gray-50 transition">
                 <td className="p-3">{product.name}</td>
                 <td className="p-3">{product.price} kr</td>
                 <td className="p-3">{product.category || "-"}</td>
+                <td className="p-3">{product.active ? "Aktiv" : "Inaktiv"}</td>
                 <td className="p-3">
-                  {product.active ? "Aktiv" : "Inaktiv"}
-                </td>
-                <td className="p-3">
-                  {new Date(product.created_at).toLocaleDateString("no-NO")}
+                  {product.created_at ? new Date(product.created_at).toLocaleDateString("no-NO") : "-"}
                 </td>
                 <td className="p-3 text-right">
-                  <Link
-                    href={`/admin/products/${product.id}`}
-                    className="text-blue-600 hover:underline"
-                  >
+                  <Link href={`/admin/products/${product.id}`} className="text-blue-600 hover:underline">
                     Rediger
                   </Link>
                 </td>
