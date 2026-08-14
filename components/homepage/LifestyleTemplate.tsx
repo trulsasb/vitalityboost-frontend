@@ -22,7 +22,7 @@ export function LifestyleTemplate({ content, products }: { content: HomepageCont
             alt=""
             fill
             priority
-            sizes="100vw"
+            unoptimized
             className="object-cover"
           />
           <div className="absolute inset-0 bg-forest/60" />
@@ -53,6 +53,7 @@ export function LifestyleTemplate({ content, products }: { content: HomepageCont
               alt="Morgenyoga i naturen"
               width={600}
               height={700}
+              unoptimized
               className="rounded-xl object-cover"
             />
           }
@@ -77,6 +78,7 @@ export function LifestyleTemplate({ content, products }: { content: HomepageCont
               alt="Næringsrik mat"
               width={600}
               height={400}
+              unoptimized
               className="rounded-xl object-cover"
             />
           }

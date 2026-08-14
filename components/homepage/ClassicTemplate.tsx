@@ -67,6 +67,7 @@ export function ClassicTemplate({ content, products }: { content: HomepageConten
               alt="Morgenyoga i naturen"
               width={600}
               height={700}
+              unoptimized
               className="rounded-xl object-cover"
             />
           }
