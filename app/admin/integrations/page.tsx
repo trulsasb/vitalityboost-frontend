@@ -137,6 +137,8 @@ export default function IntegrationsPage() {
         </p>
       </div>
 
+      <StripeGuidePanel />
+
       {error && <div className="p-4 bg-red-100 text-red-700 rounded-md">{error}</div>}
       {success && <div className="p-4 bg-green-100 text-green-700 rounded-md">{success}</div>}
 
@@ -196,6 +198,106 @@ export default function IntegrationsPage() {
         )}
       </form>
     </div>
+  );
+}
+
+function StripeGuidePanel() {
+  const webhookUrl = `${process.env.NEXT_PUBLIC_API_URL || ""}/webhooks/stripe/`;
+  const [copied, setCopied] = useState(false);
+
+  function copyWebhookUrl() {
+    navigator.clipboard.writeText(webhookUrl).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    });
+  }
+
+  return (
+    <details className="border border-blue-200 bg-blue-50 rounded-md p-4 open:pb-5" open>
+      <summary className="font-medium cursor-pointer text-blue-900">
+        Hvordan få tak i Stripe-nøklene dine
+      </summary>
+
+      <div className="mt-4 space-y-4 text-sm text-gray-800">
+        <p>
+          Selve kontoopprettelsen og identitetsverifiseringen må skje hos Stripe selv (det er en
+          bank-/finanslovkrav ingen tredjepart kan gjøre for deg) — men når kontoen er klar, skjer
+          alt annet herfra.
+        </p>
+
+        <ol className="list-decimal list-inside space-y-3">
+          <li>
+            <a
+              href="https://dashboard.stripe.com/register"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-700 underline hover:no-underline"
+            >
+              Opprett en Stripe-konto
+            </a>{" "}
+            (eller{" "}
+            <a
+              href="https://dashboard.stripe.com/login"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-700 underline hover:no-underline"
+            >
+              logg inn
+            </a>{" "}
+            hvis du allerede har en) og fullfør Stripes verifisering av bedriften din.
+          </li>
+
+          <li>
+            Gå til{" "}
+            <a
+              href="https://dashboard.stripe.com/apikeys"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-700 underline hover:no-underline"
+            >
+              Developers → API keys
+            </a>
+            . Kopier <strong>Secret key</strong> (starter med <code>sk_live_</code> eller{" "}
+            <code>sk_test_</code>) og lim den inn i feltet under.
+          </li>
+
+          <li>
+            Gå til{" "}
+            <a
+              href="https://dashboard.stripe.com/webhooks"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-700 underline hover:no-underline"
+            >
+              Developers → Webhooks
+            </a>{" "}
+            → <strong>Add endpoint</strong>. Lim inn denne URL-en som endepunkt:
+            <div className="mt-2 flex items-center gap-2">
+              <code className="bg-white border border-gray-300 rounded px-2 py-1 text-xs break-all">
+                {webhookUrl}
+              </code>
+              <button
+                type="button"
+                onClick={copyWebhookUrl}
+                className="text-xs border border-gray-300 rounded px-2 py-1 hover:bg-gray-100 whitespace-nowrap"
+              >
+                {copied ? "Kopiert!" : "Kopier"}
+              </button>
+            </div>
+            Velg disse hendelsene:{" "}
+            <code>checkout.session.completed</code>, <code>checkout.session.expired</code>,{" "}
+            <code>payment_intent.payment_failed</code> (eller enklest: velg "alle hendelser").
+          </li>
+
+          <li>
+            Etter du har opprettet webhooken, klikk inn på den og kopier{" "}
+            <strong>Signing secret</strong> (starter med <code>whsec_</code>) inn i feltet under.
+          </li>
+
+          <li>Klikk "Koble til / Lagre" nedenfor, og deretter "Test tilkobling" for å bekrefte.</li>
+        </ol>
+      </div>
+    </details>
   );
 }
 
