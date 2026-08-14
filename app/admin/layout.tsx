@@ -16,6 +16,7 @@ const navItems = [
   { name: "Billing", href: "/admin/billing" },
   { name: "Users", href: "/admin/users" },
   { name: "Content", href: "/admin/content" },
+  { name: "Betalingsoppsett", href: "/admin/integrations" },
 ];
 
 export default function AdminLayout({
