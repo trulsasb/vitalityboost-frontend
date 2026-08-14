@@ -16,6 +16,7 @@ const navItems = [
   { name: "Billing", href: "/admin/billing" },
   { name: "Users", href: "/admin/users" },
   { name: "Content", href: "/admin/content" },
+  { name: "Lag hjemmeside", href: "/admin/homepage" },
   { name: "Betalingsoppsett", href: "/admin/integrations" },
 ];
 

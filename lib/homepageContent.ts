@@ -1,5 +1,7 @@
 export interface HomepageContent {
+  template: "classic" | "product-forward" | "lifestyle";
   hero: { title: string; subtitle: string };
+  featuredProducts: { heading: string };
   features: {
     heading: string;
     items: { title: string; description: string }[];
@@ -19,6 +21,8 @@ export interface HomepageContent {
 }
 
 export const defaultHomepageContent: HomepageContent = {
+  template: "classic",
+  featuredProducts: { heading: "Populære produkter" },
   hero: {
     title: "Naturlig energi. Klarere fokus. Bedre hverdag.",
     subtitle:

@@ -32,10 +32,14 @@ export default function Header({ className = "" }: HeaderProps) {
           <Link href="/contact" className="hover:text-black">
             Kontakt
           </Link>
-          <Link href="/cart" className="relative flex items-center hover:text-black" aria-label="Handlekurv">
+          <Link
+            href="/cart"
+            className="relative -m-3 flex h-11 w-11 items-center justify-center text-gray-700 hover:text-black"
+            aria-label="Handlekurv"
+          >
             <ShoppingCart className="h-5 w-5" />
             {itemCount > 0 && (
-              <span className="absolute -top-2 -right-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-black px-1 text-[10px] font-semibold text-white">
+              <span className="absolute top-1 right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-black px-1 text-[10px] font-semibold text-white">
                 {itemCount}
               </span>
             )}
