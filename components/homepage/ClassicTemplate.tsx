@@ -3,7 +3,6 @@ import {
   FeatureGrid,
   StatsSection,
   Testimonials,
-  CTASection,
   Newsletter,
   LogoCloud,
   FeatureWithImage,
@@ -46,7 +45,9 @@ export function ClassicTemplate({ content, products }: { content: HomepageConten
       </PageSection>
 
       <PageSection>
-        <LogoCloud logos={["Trusted by athletes", "Nordic Quality", "Science Backed", "Eco Friendly"]} />
+        <div className="bg-field rounded-2xl">
+          <LogoCloud logos={["Trusted by athletes", "Nordic Quality", "Science Backed", "Eco Friendly"]} />
+        </div>
       </PageSection>
 
       <PageSection>
@@ -79,15 +80,17 @@ export function ClassicTemplate({ content, products }: { content: HomepageConten
       </PageSection>
 
       <PageSection>
-        <CTASection
-          title={content.cta.title}
-          description={content.cta.description}
-          cta={
-            <a href="/products" className="btn-primary">
-              Se produkter
-            </a>
-          }
-        />
+        <section className="w-full py-16 bg-forest rounded-2xl text-center">
+          <div className="container mx-auto px-4 max-w-2xl">
+            <h2 className="text-3xl font-bold text-white">{content.cta.title}</h2>
+            {content.cta.description && <p className="mt-4 text-lg text-gray-200">{content.cta.description}</p>}
+            <div className="mt-8 flex justify-center">
+              <a href="/products" className="btn-primary !bg-white !text-forest">
+                Se produkter
+              </a>
+            </div>
+          </div>
+        </section>
       </PageSection>
 
       <PageSection>
