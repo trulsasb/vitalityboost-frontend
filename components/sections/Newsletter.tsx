@@ -40,7 +40,7 @@ export function Newsletter({
             name="email"
             required
             placeholder="Din e‑postadresse"
-            className="flex-1 border border-field bg-field/40 rounded-md px-4 py-2 text-gray-900"
+            className="flex-1 border-2 border-field-dark bg-white rounded-md px-4 py-2 text-gray-900"
           />
           <button
             type="submit"

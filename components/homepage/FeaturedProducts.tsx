@@ -28,7 +28,7 @@ export function FeaturedProducts({
         {products.map((product) => (
           <div
             key={product.id}
-            className="border border-field bg-field/40 rounded-lg p-4 shadow-sm hover:shadow-md hover:border-forest/40 transition flex flex-col"
+            className="border-2 border-field-dark bg-white rounded-lg p-4 shadow-sm hover:shadow-md hover:border-forest transition flex flex-col"
           >
             <Link href={`/products/${product.id}`}>
               <img
