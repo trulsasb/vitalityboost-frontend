@@ -1,79 +1,35 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { defaultHomepageContent, HomepageContent } from "@/lib/homepageContent";
 
-const TEMPLATES: {
-  id: HomepageContent["template"];
-  name: string;
-  description: string;
-  preview: React.ReactNode;
-}[] = [
+const TEMPLATES: { id: HomepageContent["template"]; name: string; description: string }[] = [
   {
     id: "classic",
     name: "Klassisk",
     description:
       "Stort hovedbanner, deretter produkter, funksjoner, statistikk og kundeuttalelser. God balanse mellom merkevarehistorie og salg.",
-    preview: (
-      <div className="space-y-1.5">
-        <div className="h-10 bg-gray-800 rounded" />
-        <div className="grid grid-cols-3 gap-1">
-          <div className="h-6 bg-gray-300 rounded" />
-          <div className="h-6 bg-gray-300 rounded" />
-          <div className="h-6 bg-gray-300 rounded" />
-        </div>
-        <div className="h-4 bg-gray-200 rounded" />
-        <div className="h-4 bg-gray-200 rounded w-2/3" />
-      </div>
-    ),
   },
   {
     id: "product-forward",
     name: "Produktfokusert",
     description:
       "Kort banner rett inn i et fullt produktgrid, slik de største norske nettbutikkene gjør det. Kortest mulig vei til kjøp.",
-    preview: (
-      <div className="space-y-1.5">
-        <div className="h-5 bg-gray-300 rounded" />
-        <div className="grid grid-cols-4 gap-1">
-          <div className="h-6 bg-gray-800 rounded" />
-          <div className="h-6 bg-gray-800 rounded" />
-          <div className="h-6 bg-gray-800 rounded" />
-          <div className="h-6 bg-gray-800 rounded" />
-        </div>
-        <div className="grid grid-cols-4 gap-1">
-          <div className="h-6 bg-gray-300 rounded" />
-          <div className="h-6 bg-gray-300 rounded" />
-          <div className="h-6 bg-gray-300 rounded" />
-          <div className="h-6 bg-gray-300 rounded" />
-        </div>
-      </div>
-    ),
   },
   {
     id: "lifestyle",
     name: "Livsstil",
     description:
       "Stor, rolig helside med merkevarehistorie og bilder først — passer for premium longevity-posisjonering. Kjøpsknapp alltid synlig.",
-    preview: (
-      <div className="space-y-1.5">
-        <div className="h-14 bg-gradient-to-b from-gray-200 to-gray-100 rounded" />
-        <div className="grid grid-cols-2 gap-1">
-          <div className="h-8 bg-gray-300 rounded" />
-          <div className="h-8 bg-gray-800 rounded" />
-        </div>
-        <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto" />
-      </div>
-    ),
   },
 ];
 
 export default function HomepageTemplatePickerPage() {
+  const router = useRouter();
   const [content, setContent] = useState<HomepageContent>(defaultHomepageContent);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState<string | null>(null);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [justApplied, setJustApplied] = useState<string | null>(null);
 
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/content/homepage`, { cache: "no-store" })
@@ -83,35 +39,14 @@ export default function HomepageTemplatePickerPage() {
       })
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, []);
 
-  async function selectTemplate(templateId: HomepageContent["template"]) {
-    setSaving(templateId);
-    setError("");
-    setSuccess("");
-
-    const updated = { ...content, template: templateId };
-
-    try {
-      const res = await fetch("/api/admin/proxy/content/homepage", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: updated }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => null);
-        throw new Error(data?.detail || "Kunne ikke bytte forside");
-      }
-
-      setContent(updated);
-      setSuccess("Forsiden er byttet og live nå.");
-    } catch (err: any) {
-      setError(err.message || "Ukjent feil");
-    } finally {
-      setSaving(null);
+    const params = new URLSearchParams(window.location.search);
+    const applied = params.get("applied");
+    if (applied) {
+      setJustApplied(applied);
+      window.history.replaceState({}, "", "/admin/homepage");
     }
-  }
+  }, []);
 
   if (loading) {
     return (
@@ -126,8 +61,9 @@ export default function HomepageTemplatePickerPage() {
       <div>
         <h1 className="text-xl font-semibold tracking-tight">Lag hjemmeside</h1>
         <p className="text-sm text-gray-600 mt-1">
-          Velg en av designene under. Den blir live på forsiden med én gang du velger den. Tekst, bilder og
-          produkter hentes automatisk inn i det designet du velger — rediger tekstinnholdet under{" "}
+          Velg en design for å forhåndsvise den i full størrelse før du publiserer — ingenting blir live før
+          du bekrefter. Tekst, bilder og produkter hentes automatisk inn i det designet du velger — rediger
+          tekstinnholdet under{" "}
           <a href="/admin/content" className="underline">
             Content
           </a>
@@ -135,8 +71,11 @@ export default function HomepageTemplatePickerPage() {
         </p>
       </div>
 
-      {error && <div className="p-4 bg-red-100 text-red-700 rounded-md">{error}</div>}
-      {success && <div className="p-4 bg-green-100 text-green-700 rounded-md">{success}</div>}
+      {justApplied && (
+        <div className="p-4 bg-green-100 text-green-700 rounded-md">
+          {TEMPLATES.find((t) => t.id === justApplied)?.name || justApplied} er nå live på forsiden.
+        </div>
+      )}
 
       <div className="grid sm:grid-cols-3 gap-6">
         {TEMPLATES.map((template) => {
@@ -148,7 +87,25 @@ export default function HomepageTemplatePickerPage() {
                 active ? "border-black ring-2 ring-black" : "border-gray-200"
               }`}
             >
-              <div className="bg-white border rounded-md p-3 mb-3">{template.preview}</div>
+              <div className="relative w-full h-56 overflow-hidden rounded-md border bg-gray-50 mb-3">
+                <iframe
+                  src={`/admin/homepage/preview?template=${template.id}&embed=1`}
+                  title={`${template.name} forhåndsvisning`}
+                  tabIndex={-1}
+                  aria-hidden="true"
+                  className="pointer-events-none absolute top-0 left-0"
+                  style={{
+                    width: "1280px",
+                    height: "2600px",
+                    transform: "scale(0.19)",
+                    transformOrigin: "top left",
+                    border: "none",
+                  }}
+                  scrolling="no"
+                  loading="lazy"
+                />
+              </div>
+
               <h3 className="font-semibold text-gray-900 flex items-center gap-2">
                 {template.name}
                 {active && (
@@ -156,12 +113,12 @@ export default function HomepageTemplatePickerPage() {
                 )}
               </h3>
               <p className="text-sm text-gray-600 mt-1 flex-1">{template.description}</p>
+
               <button
-                onClick={() => selectTemplate(template.id)}
-                disabled={active || saving !== null}
-                className="mt-4 bg-black text-white px-4 py-2 rounded-md text-sm font-medium disabled:opacity-50"
+                onClick={() => router.push(`/admin/homepage/preview?template=${template.id}`)}
+                className="mt-4 bg-black text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-800 transition"
               >
-                {active ? "I bruk" : saving === template.id ? "Bytter..." : "Bruk denne"}
+                Forhåndsvis i full størrelse
               </button>
             </div>
           );

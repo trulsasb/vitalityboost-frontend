@@ -34,6 +34,13 @@ export default function AdminLayout({
     router.refresh();
   }
 
+  // The homepage preview renders the actual storefront design (full-size and
+  // as the scaled-down thumbnail iframes on the picker page) — it needs to
+  // look like the real site, not have the admin sidebar wrapped around it.
+  if (pathname.startsWith("/admin/homepage/preview")) {
+    return <>{children}</>;
+  }
+
   return (
     <div className="min-h-screen flex bg-gray-50">
       <aside className="w-64 bg-white border-r border-gray-200 p-6 flex flex-col sticky top-0 h-screen overflow-y-auto">
