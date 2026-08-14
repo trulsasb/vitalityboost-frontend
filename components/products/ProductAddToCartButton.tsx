@@ -30,7 +30,7 @@ export function ProductAddToCartButton({
   return (
     <button
       onClick={handleClick}
-      className={`rounded bg-black px-4 py-2 text-white text-sm font-medium hover:bg-gray-800 ${className}`}
+      className={`rounded bg-forest px-4 py-2 text-white text-sm font-medium hover:bg-forest-dark ${className}`}
     >
       {added ? "Lagt til!" : "Legg i handlekurv"}
     </button>

@@ -26,7 +26,10 @@ export function FeaturedProducts({
 
       <div className={`grid grid-cols-2 ${compact ? "sm:grid-cols-4" : "sm:grid-cols-3"} gap-6`}>
         {products.map((product) => (
-          <div key={product.id} className="border rounded-lg p-4 shadow-sm hover:shadow-md transition flex flex-col">
+          <div
+            key={product.id}
+            className="border border-field bg-field/40 rounded-lg p-4 shadow-sm hover:shadow-md hover:border-forest/40 transition flex flex-col"
+          >
             <Link href={`/products/${product.id}`}>
               <img
                 src={product.images?.[0] || "/placeholder.png"}

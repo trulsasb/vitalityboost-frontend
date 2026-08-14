@@ -4,7 +4,6 @@
 
 html, body {
   height: 100%;
-  background-color: #f9fafb;
 }
 
 * {
@@ -22,13 +21,13 @@ html, body {
   min-height: 48px;
   padding: 0.75rem 1.75rem;
   border-radius: 0.5rem;
-  background-color: #000;
+  background-color: #1F3D2B;
   color: #fff;
   font-weight: 600;
   transition: background-color 0.15s ease;
 }
 .btn-primary:hover {
-  background-color: #1f2937;
+  background-color: #16301F;
 }
 
 .btn-secondary {
@@ -38,11 +37,11 @@ html, body {
   min-height: 48px;
   padding: 0.75rem 1.75rem;
   border-radius: 0.5rem;
-  border: 1px solid #d1d5db;
-  color: #111827;
+  border: 1px solid #1F3D2B;
+  color: #1F3D2B;
   font-weight: 600;
   transition: background-color 0.15s ease;
 }
 .btn-secondary:hover {
-  background-color: #f9fafb;
+  background-color: #EFF3EC;
 }

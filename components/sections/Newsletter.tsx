@@ -40,11 +40,11 @@ export function Newsletter({
             name="email"
             required
             placeholder="Din e‑postadresse"
-            className="flex-1 border border-gray-300 rounded-md px-4 py-2 text-gray-900"
+            className="flex-1 border border-field bg-field/40 rounded-md px-4 py-2 text-gray-900"
           />
           <button
             type="submit"
-            className="px-6 py-2 bg-gray-900 text-white rounded-md font-medium"
+            className="px-6 py-2 bg-forest hover:bg-forest-dark text-white rounded-md font-medium transition"
           >
             Meld meg på
           </button>

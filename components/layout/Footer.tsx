@@ -10,7 +10,7 @@ interface FooterProps {
 export default function Footer({ className = "" }: FooterProps) {
   return (
     <footer
-      className={`w-full border-t border-gray-200 bg-white/80 backdrop-blur-sm ${className}`}
+      className={`w-full border-t border-gray-200 bg-cream/80 backdrop-blur-sm ${className}`}
     >
       <div className="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
@@ -19,13 +19,13 @@ export default function Footer({ className = "" }: FooterProps) {
           </p>
 
           <nav className="flex items-center gap-6 text-sm font-medium text-gray-700">
-            <Link href="/privacy" className="hover:text-black">
+            <Link href="/privacy" className="hover:text-forest">
               Personvern
             </Link>
-            <Link href="/terms" className="hover:text-black">
+            <Link href="/terms" className="hover:text-forest">
               Vilkår
             </Link>
-            <Link href="/contact" className="hover:text-black">
+            <Link href="/contact" className="hover:text-forest">
               Kontakt
             </Link>
           </nav>

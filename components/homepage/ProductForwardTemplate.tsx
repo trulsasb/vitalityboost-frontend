@@ -15,7 +15,7 @@ export function ProductForwardTemplate({ content, products }: { content: Homepag
   return (
     <>
       <PageSection className="!mb-6">
-        <section className="w-full py-10 md:py-14 bg-gray-50 rounded-b-2xl">
+        <section className="w-full py-10 md:py-14 bg-field rounded-b-2xl">
           <div className="container mx-auto px-4 text-center">
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900">{content.hero.title}</h1>
             {content.hero.subtitle && (
@@ -45,12 +45,12 @@ export function ProductForwardTemplate({ content, products }: { content: Homepag
       </PageSection>
 
       <PageSection>
-        <section className="w-full py-10 bg-black rounded-2xl text-center">
+        <section className="w-full py-10 bg-forest rounded-2xl text-center">
           <div className="container mx-auto px-4">
             <h2 className="text-2xl font-bold text-white">{content.cta.title}</h2>
-            {content.cta.description && <p className="mt-3 text-gray-300">{content.cta.description}</p>}
+            {content.cta.description && <p className="mt-3 text-gray-200">{content.cta.description}</p>}
             <div className="mt-6">
-              <a href="#produkter" className="btn-primary !bg-white !text-black">
+              <a href="#produkter" className="btn-primary !bg-white !text-forest">
                 Se produkter
               </a>
             </div>

@@ -62,7 +62,13 @@ export function ClassicTemplate({ content, products }: { content: HomepageConten
           heading={content.featureWithImage.heading}
           description={content.featureWithImage.description}
           image={
-            <Image src="/images/product-1.png" alt="Produkt" width={600} height={600} className="rounded-xl" />
+            <Image
+              src="/images/feature-yoga-sunrise.jpg"
+              alt="Morgenyoga i naturen"
+              width={600}
+              height={700}
+              className="rounded-xl object-cover"
+            />
           }
         />
       </PageSection>

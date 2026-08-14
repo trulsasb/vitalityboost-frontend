@@ -24,9 +24,8 @@ export const defaultHomepageContent: HomepageContent = {
   template: "classic",
   featuredProducts: { heading: "Populære produkter" },
   hero: {
-    title: "Naturlig energi. Klarere fokus. Bedre hverdag.",
-    subtitle:
-      "Premium kosttilskudd utviklet for å støtte energi, konsentrasjon og velvære – helt uten kompromisser.",
+    title: "Vitalityboost",
+    subtitle: "Naturlig energi. Klarere fokus. Bedre hverdag.",
   },
   features: {
     heading: "Hvorfor Vitalityboost?",

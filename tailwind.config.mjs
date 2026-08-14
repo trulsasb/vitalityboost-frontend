@@ -5,7 +5,16 @@ export default {
     "./components/**/*.{js,ts,jsx,tsx}"
   ],
   theme: {
-    extend: {}
+    extend: {
+      colors: {
+        cream: "#FAF8F3",
+        field: "#EFF3EC",
+        forest: {
+          DEFAULT: "#1F3D2B",
+          dark: "#16301F"
+        }
+      }
+    }
   },
   plugins: []
 };
