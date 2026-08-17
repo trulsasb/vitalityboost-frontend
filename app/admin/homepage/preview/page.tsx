@@ -61,7 +61,10 @@ function PreviewInner() {
 
       if (!res.ok) throw new Error("Kunne ikke publisere");
 
-      router.push(`/admin/homepage?applied=${templateId}`);
+      // Back into the Content split-screen editor (not the template picker)
+      // — the newly applied design renders live there immediately, which is
+      // its own confirmation, and it's where editing actually continues.
+      router.push("/admin/content");
     } catch (err: any) {
       setError(err.message || "Ukjent feil");
       setApplying(false);

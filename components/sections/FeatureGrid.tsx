@@ -10,6 +10,7 @@ interface FeatureGridProps {
   features: Feature[];
   columns?: 2 | 3 | 4;
   className?: string;
+  fieldPrefix?: string;
 }
 
 export function FeatureGrid({
@@ -18,6 +19,7 @@ export function FeatureGrid({
   features,
   columns = 3,
   className = "",
+  fieldPrefix,
 }: FeatureGridProps) {
   const gridCols = {
     2: "grid-cols-1 md:grid-cols-2",
@@ -29,7 +31,10 @@ export function FeatureGrid({
     <section className={`w-full py-16 ${className}`}>
       <div className="container mx-auto px-4">
         {heading && (
-          <h2 className="text-3xl font-bold text-gray-900 text-center">
+          <h2
+            className="text-3xl font-bold text-gray-900 text-center"
+            data-field={fieldPrefix ? `${fieldPrefix}.heading` : undefined}
+          >
             {heading}
           </h2>
         )}
@@ -49,11 +54,17 @@ export function FeatureGrid({
                 </div>
               )}
 
-              <h3 className="text-xl font-semibold text-gray-900">
+              <h3
+                className="text-xl font-semibold text-gray-900"
+                data-field={fieldPrefix ? `${fieldPrefix}.items.${i}.title` : undefined}
+              >
                 {feature.title}
               </h3>
 
-              <p className="mt-2 text-gray-600 text-sm">
+              <p
+                className="mt-2 text-gray-600 text-sm"
+                data-field={fieldPrefix ? `${fieldPrefix}.items.${i}.description` : undefined}
+              >
                 {feature.description}
               </p>
             </div>

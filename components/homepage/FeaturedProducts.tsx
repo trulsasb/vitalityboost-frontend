@@ -13,16 +13,25 @@ export function FeaturedProducts({
   heading,
   products,
   compact = false,
+  fieldPrefix,
 }: {
   heading: string;
   products: Product[];
   compact?: boolean;
+  fieldPrefix?: string;
 }) {
   if (products.length === 0) return null;
 
   return (
     <div>
-      {heading && <h2 className="text-2xl font-bold text-gray-900 mb-6">{heading}</h2>}
+      {heading && (
+        <h2
+          className="text-2xl font-bold text-gray-900 mb-6"
+          data-field={fieldPrefix ? `${fieldPrefix}.heading` : undefined}
+        >
+          {heading}
+        </h2>
+      )}
 
       <div className={`grid grid-cols-2 ${compact ? "sm:grid-cols-4" : "sm:grid-cols-3"} gap-6`}>
         {products.map((product) => (

@@ -1,6 +1,7 @@
 interface StatItem {
   label: string;
   value: string | number;
+  hidden?: boolean;
 }
 
 interface StatsSectionProps {
@@ -9,6 +10,7 @@ interface StatsSectionProps {
   stats: StatItem[];
   columns?: 2 | 3 | 4;
   className?: string;
+  fieldPrefix?: string;
 }
 
 export function StatsSection({
@@ -17,6 +19,7 @@ export function StatsSection({
   stats,
   columns = 3,
   className = "",
+  fieldPrefix,
 }: StatsSectionProps) {
   const gridCols = {
     2: "grid-cols-1 md:grid-cols-2",
@@ -41,16 +44,15 @@ export function StatsSection({
         )}
 
         <div className={`mt-12 grid gap-10 ${gridCols[columns]}`}>
-          {stats.map((stat, i) => (
-            <div key={i}>
-              <div className="text-4xl font-bold text-gray-900">
-                {stat.value}
+          {stats.map((stat, i) => {
+            if (stat.hidden) return null;
+            return (
+              <div key={i} data-field={fieldPrefix ? `${fieldPrefix}.${i}` : undefined}>
+                <div className="text-4xl font-bold text-gray-900">{stat.value}</div>
+                <div className="mt-2 text-gray-600 text-sm">{stat.label}</div>
               </div>
-              <div className="mt-2 text-gray-600 text-sm">
-                {stat.label}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
       </div>

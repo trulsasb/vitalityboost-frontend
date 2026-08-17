@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import clsx from "clsx";
 
 // Only sections with a real, working backend behind them. The rest
-// (categories, brands, reviews, discounts, subscriptions, settings,
+// (categories, brands, reviews, subscriptions, settings,
 // analytics, customers, media, support) have no backend support yet —
 // their routes still exist but show a "not available" placeholder rather
 // than being linked here as if they worked.
@@ -15,8 +15,9 @@ const navItems = [
   { name: "Orders", href: "/admin/orders" },
   { name: "Billing", href: "/admin/billing" },
   { name: "Users", href: "/admin/users" },
-  { name: "Content", href: "/admin/content" },
+  { name: "Rabatter", href: "/admin/discounts" },
   { name: "Lag hjemmeside", href: "/admin/homepage" },
+  { name: "Content", href: "/admin/content" },
   { name: "Betalingsoppsett", href: "/admin/integrations" },
 ];
 

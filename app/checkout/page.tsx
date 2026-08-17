@@ -22,9 +22,59 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const [discountCodeInput, setDiscountCodeInput] = useState("");
+  const [appliedDiscount, setAppliedDiscount] = useState<{ code: string; amount: number } | null>(null);
+  const [discountError, setDiscountError] = useState("");
+  const [checkingDiscount, setCheckingDiscount] = useState(false);
+
+  const subtotal = items.reduce((sum, item) => sum + item.quantity * item.price, 0);
+  const total = Math.max(0, subtotal - (appliedDiscount?.amount || 0));
+
   const handleChange = (field: string, value: string) => {
     setCustomer((prev) => ({ ...prev, [field]: value }));
   };
+
+  async function applyDiscountCode() {
+    if (!discountCodeInput.trim()) return;
+    setCheckingDiscount(true);
+    setDiscountError("");
+
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/discounts/validate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          code: discountCodeInput.trim(),
+          items: items.map((item) => ({
+            product_id: Number(item.productId),
+            quantity: item.quantity,
+          })),
+          customer_email: customer.email || null,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.valid) {
+        setAppliedDiscount(null);
+        setDiscountError(data.message || "Ugyldig rabattkode");
+        return;
+      }
+
+      setAppliedDiscount({ code: discountCodeInput.trim(), amount: data.discount_amount });
+    } catch {
+      setAppliedDiscount(null);
+      setDiscountError("Kunne ikke sjekke rabattkoden. Prøv igjen.");
+    } finally {
+      setCheckingDiscount(false);
+    }
+  }
+
+  function removeDiscountCode() {
+    setAppliedDiscount(null);
+    setDiscountCodeInput("");
+    setDiscountError("");
+  }
 
   const handleSubmit = async () => {
     if (!customer.name || !customer.email || !customer.address || !customer.zip || !customer.city) {
@@ -46,6 +96,7 @@ export default function CheckoutPage() {
           })),
           provider,
           customer,
+          discountCode: appliedDiscount?.code,
         }),
       });
 
@@ -177,6 +228,58 @@ export default function CheckoutPage() {
                   quantity={item.quantity}
                 />
               ))}
+            </div>
+          </div>
+
+          <div className="pt-6 border-t">
+            <h2 className="text-xl font-semibold mb-4">Rabattkode</h2>
+
+            {appliedDiscount ? (
+              <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-md">
+                <span className="text-sm text-green-800">
+                  Kode <strong>{appliedDiscount.code}</strong> — trekker fra {appliedDiscount.amount} kr
+                </span>
+                <button type="button" onClick={removeDiscountCode} className="text-sm text-gray-600 underline">
+                  Fjern
+                </button>
+              </div>
+            ) : (
+              <div className="flex gap-3">
+                <input
+                  type="text"
+                  value={discountCodeInput}
+                  onChange={(e) => setDiscountCodeInput(e.target.value)}
+                  placeholder="Rabattkode"
+                  className="border rounded-lg px-3 py-2 flex-1"
+                />
+                <button
+                  type="button"
+                  onClick={applyDiscountCode}
+                  disabled={checkingDiscount || !discountCodeInput.trim()}
+                  className="px-4 py-2 border border-black rounded-lg font-medium disabled:opacity-50"
+                >
+                  {checkingDiscount ? "Sjekker..." : "Bruk"}
+                </button>
+              </div>
+            )}
+
+            {discountError && <p className="mt-2 text-sm text-red-600">{discountError}</p>}
+          </div>
+
+          <div className="pt-6 border-t space-y-2">
+            <div className="flex justify-between text-gray-600">
+              <span>Delsum</span>
+              <span>{subtotal} kr</span>
+            </div>
+            {appliedDiscount && (
+              <div className="flex justify-between text-green-700">
+                <span>Rabatt</span>
+                <span>-{appliedDiscount.amount} kr</span>
+              </div>
+            )}
+            <div className="flex justify-between text-lg font-semibold">
+              <span>Total</span>
+              <span>{total} kr</span>
             </div>
           </div>
 

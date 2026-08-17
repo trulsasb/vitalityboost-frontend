@@ -29,7 +29,6 @@ export default function HomepageTemplatePickerPage() {
   const router = useRouter();
   const [content, setContent] = useState<HomepageContent>(defaultHomepageContent);
   const [loading, setLoading] = useState(true);
-  const [justApplied, setJustApplied] = useState<string | null>(null);
 
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/content/homepage`, { cache: "no-store" })
@@ -39,13 +38,6 @@ export default function HomepageTemplatePickerPage() {
       })
       .catch(() => {})
       .finally(() => setLoading(false));
-
-    const params = new URLSearchParams(window.location.search);
-    const applied = params.get("applied");
-    if (applied) {
-      setJustApplied(applied);
-      window.history.replaceState({}, "", "/admin/homepage");
-    }
   }, []);
 
   if (loading) {
@@ -70,12 +62,6 @@ export default function HomepageTemplatePickerPage() {
           .
         </p>
       </div>
-
-      {justApplied && (
-        <div className="p-4 bg-green-100 text-green-700 rounded-md">
-          {TEMPLATES.find((t) => t.id === justApplied)?.name || justApplied} er nå live på forsiden.
-        </div>
-      )}
 
       <div className="grid sm:grid-cols-3 gap-6">
         {TEMPLATES.map((template) => {

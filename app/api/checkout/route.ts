@@ -22,10 +22,11 @@ interface CheckoutCustomer {
 // stable same-origin endpoint to call.
 export async function POST(req: Request) {
   try {
-    const { items, provider, customer } = (await req.json()) as {
+    const { items, provider, customer, discountCode } = (await req.json()) as {
       items: CheckoutItem[];
       provider: "stripe" | "vipps";
       customer: CheckoutCustomer;
+      discountCode?: string;
     };
 
     if (!items || items.length === 0) {
@@ -51,6 +52,7 @@ export async function POST(req: Request) {
         shipping_address: customer.address,
         shipping_zip: customer.zip,
         shipping_city: customer.city,
+        discount_code: discountCode || null,
       }),
     });
 

@@ -6,6 +6,7 @@ interface FeatureWithImageProps {
   reverse?: boolean;
   cta?: React.ReactNode;
   className?: string;
+  fieldPrefix?: string;
 }
 
 export function FeatureWithImage({
@@ -16,6 +17,7 @@ export function FeatureWithImage({
   reverse = false,
   cta,
   className = "",
+  fieldPrefix,
 }: FeatureWithImageProps) {
   const displayTitle = heading ?? title;
 
@@ -27,11 +29,17 @@ export function FeatureWithImage({
         }`}
       >
         <div>
-          <h2 className="text-3xl font-bold text-gray-900">
+          <h2
+            className="text-3xl font-bold text-gray-900"
+            data-field={fieldPrefix ? `${fieldPrefix}.heading` : undefined}
+          >
             {displayTitle}
           </h2>
 
-          <p className="mt-4 text-lg text-gray-600 max-w-lg">
+          <p
+            className="mt-4 text-lg text-gray-600 max-w-lg"
+            data-field={fieldPrefix ? `${fieldPrefix}.description` : undefined}
+          >
             {description}
           </p>
 
