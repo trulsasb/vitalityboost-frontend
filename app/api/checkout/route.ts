@@ -80,7 +80,11 @@ export async function POST(req: Request) {
     }
 
     const payment = await paymentRes.json();
-    return NextResponse.json({ url: payment.checkout_url });
+    return NextResponse.json({
+      url: payment.checkout_url,
+      paymentId: payment.payment_id,
+      statusToken: payment.status_token,
+    });
   } catch (error) {
     console.error("Checkout error:", error);
     return NextResponse.json({ error: "Noe gikk feil under checkout" }, { status: 500 });

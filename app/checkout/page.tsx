@@ -103,6 +103,14 @@ export default function CheckoutPage() {
       const data = await res.json();
 
       if (res.ok && data.url) {
+        // Stashed so the success/complete page — reached after a full
+        // redirect round-trip to Stripe/Vipps and back — can poll the
+        // backend for the real payment status instead of just assuming
+        // success because the browser landed there.
+        sessionStorage.setItem(
+          "vb_pending_payment",
+          JSON.stringify({ paymentId: data.paymentId, statusToken: data.statusToken })
+        );
         window.location.href = data.url;
       } else {
         throw new Error(data.error || "Kunne ikke starte betaling.");
