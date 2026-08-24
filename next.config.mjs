@@ -7,7 +7,13 @@ const nextConfig = {
     // device sizes (1080px+) was crashing that process (502s). Capping the
     // widths Next will ever generate keeps every resize request cheap.
     deviceSizes: [640, 750, 828],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384]
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "*.r2.dev",
+      },
+    ],
   }
 };
 
