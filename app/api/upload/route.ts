@@ -19,9 +19,15 @@ const ALLOWED_TYPES: Record<string, string> = {
 };
 
 function getR2Client(): S3Client {
+  // R2_ENDPOINT is an optional override for jurisdiction-restricted buckets
+  // (e.g. https://<ACCOUNT_ID>.eu.r2.cloudflarestorage.com) -- Cloudflare
+  // shows the exact endpoint to use on the token-creation confirmation
+  // page when a bucket has a jurisdiction set. Falls back to the default
+  // global endpoint when not set.
+  const endpoint = process.env.R2_ENDPOINT || `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`;
   return new S3Client({
     region: "auto",
-    endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+    endpoint,
     credentials: {
       accessKeyId: process.env.R2_ACCESS_KEY_ID!,
       secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
