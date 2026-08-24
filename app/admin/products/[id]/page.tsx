@@ -83,6 +83,14 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
+
+    // Guards against submitting while the image is still mid-upload -- see
+    // matching fix/comment in admin/products/new/page.tsx.
+    if (uploading) {
+      setError("Vent til bildeopplastingen er ferdig før du lagrer");
+      return;
+    }
+
     setSaving(true);
     setError("");
 
@@ -244,7 +252,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
         <div className="pt-4 flex items-center justify-between">
           <button
             type="submit"
-            disabled={saving}
+            disabled={saving || uploading}
             className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition disabled:opacity-50"
           >
             {saving ? "Lagrer..." : "Lagre endringer"}

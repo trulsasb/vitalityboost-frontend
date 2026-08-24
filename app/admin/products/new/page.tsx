@@ -58,6 +58,16 @@ export default function NewProductPage() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+
+    // Guards against submitting while the image is still mid-upload --
+    // the async upload sets form.image only once it resolves, so a fast
+    // (or Enter-key) submit before then would silently save with the old,
+    // empty image value even with the button visually disabled.
+    if (uploading) {
+      setError("Vent til bildeopplastingen er ferdig før du lagrer");
+      return;
+    }
+
     setLoading(true);
     setError("");
 
@@ -179,7 +189,7 @@ export default function NewProductPage() {
         <div className="pt-4">
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || uploading}
             className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition disabled:opacity-50"
           >
             {loading ? "Oppretter..." : "Opprett produkt"}
