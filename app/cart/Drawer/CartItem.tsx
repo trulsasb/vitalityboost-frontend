@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import { useCart } from "@/app/cart/CartProvider";
 
 interface CartItemProps {
@@ -20,6 +21,24 @@ export default function CartItem({
 }: CartItemProps) {
   const { updateQuantity, removeItem } = useCart();
 
+  // Local draft string so the field can be freely typed into (cleared,
+  // multi-digit numbers entered) without fighting the committed cart
+  // quantity on every keystroke -- only commits (and clamps to >= 1) on
+  // blur/Enter. Previously there was no text input at all, only +/-
+  // buttons, so entering a quantity meant clicking one-by-one.
+  const [draft, setDraft] = useState(String(quantity));
+
+  useEffect(() => {
+    setDraft(String(quantity));
+  }, [quantity]);
+
+  function commitDraft() {
+    const parsed = parseInt(draft, 10);
+    const next = Number.isFinite(parsed) && parsed >= 1 ? parsed : quantity;
+    setDraft(String(next));
+    if (next !== quantity) updateQuantity(id, next);
+  }
+
   return (
     <div className="flex items-center justify-between py-4 border-b">
       <div className="flex items-center gap-4">
@@ -38,13 +57,28 @@ export default function CartItem({
 
       <div className="flex items-center gap-3">
         <button
-          onClick={() => updateQuantity(id, quantity - 1)}
+          onClick={() => updateQuantity(id, Math.max(1, quantity - 1))}
           className="px-2 py-1 border rounded"
         >
           -
         </button>
 
-        <span>{quantity}</span>
+        <input
+          type="number"
+          min={1}
+          inputMode="numeric"
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={commitDraft}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              (e.target as HTMLInputElement).blur();
+            }
+          }}
+          className="w-14 text-center border rounded px-1 py-1"
+          aria-label={`Antall av ${name}`}
+        />
 
         <button
           onClick={() => updateQuantity(id, quantity + 1)}

@@ -33,7 +33,7 @@ export default function NewProductPage() {
     setError("");
 
     const formData = new FormData();
-    formData.append("files", files[0]);
+    formData.append("file", files[0]);
 
     try {
       const res = await fetch("/api/upload", {
@@ -48,7 +48,7 @@ export default function NewProductPage() {
         return;
       }
 
-      updateField("image", data.urls?.[0] || "");
+      updateField("image", data.url || "");
     } catch {
       setError("Ukjent feil ved opplasting");
     } finally {
