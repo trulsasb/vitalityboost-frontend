@@ -9,14 +9,21 @@ import clsx from "clsx";
 // analytics, customers, media, support) have no backend support yet —
 // their routes still exist but show a "not available" placeholder rather
 // than being linked here as if they worked.
-const navItems = [
+const navItems: { name: string; href: string; external?: boolean }[] = [
   { name: "Dashboard", href: "/admin" },
   { name: "Products", href: "/admin/products" },
   { name: "Orders", href: "/admin/orders" },
   { name: "Billing", href: "/admin/billing" },
   { name: "Users", href: "/admin/users" },
   { name: "Rabatter", href: "/admin/discounts" },
-  { name: "Lag hjemmeside", href: "/admin/homepage" },
+  { name: "Lag butikkens forside", href: "/admin/homepage" },
+  {
+    name: "Rediger hjemmeside",
+    href:
+      process.env.NEXT_PUBLIC_WORDPRESS_HOMEPAGE_EDIT_URL ||
+      "http://localhost:8080/wp-admin/post.php?post=6&action=elementor",
+    external: true,
+  },
   { name: "Content", href: "/admin/content" },
   { name: "Betalingsoppsett", href: "/admin/integrations" },
 ];
@@ -49,6 +56,20 @@ export default function AdminLayout({
 
         <nav className="flex flex-col gap-2">
           {navItems.map((item) => {
+            if (item.external) {
+              return (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3 py-2 rounded-md text-sm font-medium transition-colors text-gray-700 hover:bg-gray-100"
+                >
+                  {item.name} ↗
+                </a>
+              );
+            }
+
             const active = pathname.startsWith(item.href);
 
             return (
