@@ -3,6 +3,13 @@ import PageContainer from "@/components/layout/PageContainer";
 import Filters from "./Filters";
 import { getProducts } from "@/lib/products";
 import { ProductAddToCartButton } from "@/components/products/ProductAddToCartButton";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Alle produkter",
+  description:
+    "Se hele utvalget av Vitalityboost sine kosttilskudd for longevity og sunn aldring.",
+};
 
 interface ProductsPageProps {
   searchParams: { sort?: string; tag?: string };

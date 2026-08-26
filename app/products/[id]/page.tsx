@@ -3,10 +3,42 @@ import PageContainer from "@/components/layout/PageContainer";
 import { getProductById } from "@/lib/products";
 import { notFound } from "next/navigation";
 import { ProductAddToCartButton } from "@/components/products/ProductAddToCartButton";
+import type { Metadata } from "next";
 
 interface ProductPageProps {
   params: {
     id: string;
+  };
+}
+
+function metaDescription(description: string | null): string | undefined {
+  if (!description) return undefined;
+  return description.length > 155
+    ? description.slice(0, 155).trimEnd() + "…"
+    : description;
+}
+
+export async function generateMetadata({
+  params,
+}: ProductPageProps): Promise<Metadata> {
+  const product = await getProductById(params.id);
+
+  if (!product) {
+    return { title: "Produkt ikke funnet" };
+  }
+
+  const description = metaDescription(product.description);
+  const image = product.images?.[0];
+
+  return {
+    title: product.name,
+    description,
+    openGraph: {
+      title: product.name,
+      description,
+      images: image ? [{ url: image }] : undefined,
+      type: "website",
+    },
   };
 }
 
@@ -17,7 +49,30 @@ export default async function ProductPage({ params }: ProductPageProps) {
     return notFound();
   }
 
+  const productJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.description || undefined,
+    image: product.images,
+    sku: String(product.id),
+    offers: {
+      "@type": "Offer",
+      priceCurrency: "NOK",
+      price: product.price,
+      availability:
+        product.stock > 0
+          ? "https://schema.org/InStock"
+          : "https://schema.org/OutOfStock",
+    },
+  };
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
     <PageSection>
       <PageContainer>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -56,5 +111,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
       </PageContainer>
     </PageSection>
+    </>
   );
 }

@@ -10,8 +10,14 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
-  title: "Vitalityboost Nettbutikk",
-  description: "Nettbutikk for longevity-kosttilskudd fra Vitalityboost"
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "https://vitalityboost-frontend.onrender.com"
+  ),
+  title: {
+    default: "Vitalityboost Nettbutikk",
+    template: "%s | Vitalityboost",
+  },
+  description: "Nettbutikk for longevity-kosttilskudd fra Vitalityboost",
 };
 
 // The single source of truth for site chrome — individual pages should

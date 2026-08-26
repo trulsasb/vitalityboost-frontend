@@ -4,6 +4,7 @@ interface BackendProduct {
   description: string | null;
   price: number;
   image: string | null;
+  stock: number;
 }
 
 export async function getProducts() {
@@ -24,6 +25,7 @@ export async function getProducts() {
       description: product.description,
       price: product.price,
       images: product.image ? [product.image] : [],
+      stock: product.stock,
     }));
   } catch (error) {
     console.error("Error fetching products:", error);
@@ -49,6 +51,7 @@ export async function getProductById(id: string) {
       description: product.description,
       price: product.price,
       images: product.image ? [product.image] : [],
+      stock: product.stock,
     };
   } catch (error) {
     console.error("Error fetching product:", error);

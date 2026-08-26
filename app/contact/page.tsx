@@ -1,5 +1,11 @@
 import PageSection from "@/components/layout/PageSection";
 import PageContainer from "@/components/layout/PageContainer";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Kontakt",
+  description: "Ta kontakt med Vitalityboost ved spørsmål om bestilling eller produkter.",
+};
 
 export default function ContactPage() {
   return (

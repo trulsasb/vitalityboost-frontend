@@ -1,5 +1,12 @@
 import PageSection from "@/components/layout/PageSection";
 import PageContainer from "@/components/layout/PageContainer";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Om oss",
+  description:
+    "VitalityBoost lager kosttilskudd for voksne som vil ha mer energi, klarere fokus og en sunnere hverdag, basert på dokumentert forskning.",
+};
 
 export default function AboutPage() {
   return (
