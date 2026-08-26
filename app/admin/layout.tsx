@@ -25,6 +25,7 @@ const navItems: { name: string; href: string; external?: boolean }[] = [
     external: true,
   },
   { name: "Content", href: "/admin/content" },
+  { name: "Kontaktskjema", href: "/admin/contact-settings" },
   { name: "Betalingsoppsett", href: "/admin/integrations" },
 ];
 
